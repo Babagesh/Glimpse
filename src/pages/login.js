@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Link } from "react-router-dom";
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
 import { auth } from '../database';
+import Data from "../ data"
+
+const provider = new GoogleAuthProvider();
+provider.addScope("https://www.googleapis.com/auth/drive.photos.readonly")
 
 export default function Login() {
   //Handle Error Eventually
@@ -10,8 +14,36 @@ export default function Login() {
   const [password, setPassword] = useState('')
 
   const navigate = useNavigate()
+  const auth = getAuth();
 
-  const onSubmit = async (e) => {
+  const onSubmit = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        const user = result.user;
+        Data.credential = credential;
+        Data.token = token;
+        Data.user = user;
+        navigate("/glimpses")
+      }).catch((error) => {
+        Data.credential, Data.token, Data.user = null;
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        const email = error.customData.email;
+        const credential = GoogleAuthProvider.credentialFromError(error);
+      });
+  }
+
+  return (
+    <div>
+      <div className="mt-8">
+        <input type="button" className="w-full text-lg shadow-xl py-2 px-10 text-sm tracking-wide rounded-lg text-white bg-slate-800" onClick={onSubmit} value={'Log in'} />
+      </div>
+    </div>
+  )
+
+  /*const onSubmit = async (e) => {
     e.preventDefault()
 
     await signInWithEmailAndPassword(auth, email, password)
@@ -57,5 +89,5 @@ export default function Login() {
         <Link to="/signup" className="mt-4 text-sky-600 text-md">Sign Up</Link>
       </div>
     </div>
-  );
+  );*/
 }
