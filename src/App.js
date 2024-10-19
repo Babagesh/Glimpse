@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { redirect } from 'react-router-dom' 
+import { useNavigate } from 'react-router-dom' 
+import { Outlet, Link } from "react-router-dom";
 
 export default function Login() {
     const [email, setEmail] = useState('')
@@ -7,8 +8,10 @@ export default function Login() {
     const [emailError, setEmailError] = useState('')
     const [passwordError, setPasswordError] = useState('')
 
+    const navigate = useNavigate()
+
     const onButtonClick = () => {
-      redirect("/login")
+      navigate("/login")
     }
 
     return (
@@ -38,7 +41,7 @@ export default function Login() {
             </div>
             <br/>
             <div>
-                <input className = {'inputButton'} type = "button" onClick = {onButtonClick} value = {"Log in"}/>
+              <input className={'inputButton'} type="button" onClick={onButtonClick} value={'Log in'} />
             </div>
         </div>
     );
