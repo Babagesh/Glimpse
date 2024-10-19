@@ -19,7 +19,7 @@ export default function Login() {
           .then((userCredential) => {
               const user = userCredential.user;
               console.log(user)
-              navigate("/")
+              navigate("/glimpses")
           })
           .catch((error) => {
               const errorCode = error.code;
