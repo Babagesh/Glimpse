@@ -47,7 +47,7 @@ const MyComponent = () => {
 
   return (
     <div>
-      <input type="file" accept="image/*" onChange={handleImageChange} />
+      <input type="file" accept=".jpg, .jpeg, .png" onChange={handleImageChange} />
       <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
         <GoogleMap
           mapContainerStyle={containerStyle}
@@ -57,7 +57,10 @@ const MyComponent = () => {
           {markerIcon && (
             <Marker
               position={location}
-              icon={markerIcon}
+              icon={{
+                url: markerIcon,
+                scaledSize: new window.google.maps.Size(50, 50),  // Adjust size as needed
+              }}
             />
           )}
         </GoogleMap>
