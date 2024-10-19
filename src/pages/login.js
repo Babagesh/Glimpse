@@ -14,7 +14,7 @@ export default function Login() {
   const onSubmit = async (e) => {
     e.preventDefault()
 
-    await createUserWithEmailAndPassword(auth, email, password)
+    await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
         console.log(user)
