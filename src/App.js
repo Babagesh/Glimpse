@@ -12,7 +12,7 @@ export default function Login() {
     const navigate = useNavigate()
 
     const onButtonClick = () => {
-      navigate("/login")
+      navigate("/glimpses")
     }
 
     return (

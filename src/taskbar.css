@@ -1,0 +1,18 @@
+.taskbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #333; /* Dark background */
+    color: white; /* Text color */
+    height: 50px; /* Height of the taskbar */
+    position: fixed; /* Fix at the bottom */
+    bottom: 0; /* Position at the bottom */
+    left: 0; /* Stretch across the full width */
+    width: 100%; /* Full width */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5); /* Shadow effect */
+  }
+  
+.taskbar-option {
+cursor: pointer; /* Change cursor on hover */
+padding: 10px; /* Padding around options */
+}
