@@ -7,6 +7,7 @@ import {
 
 import App from './App';
 import Login from "./pages/login"
+import './App.css';
 
 const router = createBrowserRouter([
   {
