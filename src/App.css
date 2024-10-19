@@ -85,3 +85,7 @@
 cursor: pointer; /* Change cursor on hover */
 padding: 10px; /* Padding around options */
 }
+.half-screen {
+  height: 50vh; /* 50% of the viewport height */
+  width: 100%;
+}
