@@ -1,23 +1,28 @@
-/*function initMap(){
-    map = new google.maps.Map(document.getElementById('map'),{
-    center: {lat: -34.397, lng: 150.644},
-    zoom: 8,
-    mapId: '11659132972ddeaa'
-    });
-}*/
+import React from 'react';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
-import React from "react"
-import {APIProvider, Map, Marker} from '@vis.gl/react-google-maps'
+const containerStyle = {
+  width: '400px',
+  height: '400px'
+};
 
-export default function MapTest() {
-    const position = {lat: 61.2176, lng: -149.8997};
-    return (
-        <div>
-            <APIProvider apiKey={'AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs'}>
-            <Map center={position} zoom={10}>
-                <Marker position={position} />
-            </Map>
-            </APIProvider>
-        </div>
-    );
-}
+const center = {
+  lat: 40.7128,
+  lng: -74.0060
+};
+
+const MyComponent = () => {
+  return (
+    <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={center}
+        zoom={11}
+      >
+        <Marker position={center} />
+      </GoogleMap>
+    </LoadScript>
+  );
+};
+
+export default MyComponent;
