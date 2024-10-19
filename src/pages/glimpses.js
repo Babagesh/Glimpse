@@ -11,36 +11,29 @@ export default function glimpses() {
   );
 }
 
-  const Taskbar = () => {
-    const navigate = useNavigate()
-
-    return (
-      <div className="taskbar">
-        <div className="taskbar-option">
-          <button onClick={() => navigate("/existing")}>Contribute To Glimpse</button>
-          </div>
-        <div className="taskbar-option">
-          <button onClick={() => navigate("/new")}>New Glimpse</button>
-          </div>
-        <div className="taskbar-option">
-          <button onClick={() => navigate("/future")}>Future Glimpse</button>
-          </div>
-      </div>
-    );
-  }
+const Taskbar = () => {
+  const navigate = useNavigate();
+  return (
+    <div className="taskbar">
+      <div className="taskbar-option">
+        <button onClick={() => navigate("/existing")}>Contribute To Glimpse</button>
+        </div>
+      <div className="taskbar-option">
+        <button onClick={() => navigate("/new")}>New Glimpse</button>
+        </div>
+    </div>
+  );
+}
 
 const files = [
   {
-    title: 'Chicago',
-    thumbnail: "../public/chicago.jpg",
+    title: 'Chicago Summer 2024',
   },
   {
-    title: 'San Francisco',
-    thumbnail: "../public/sanfran.jpg",
+    title: 'San Francisco Fall 2024',
   },
   {
-    title: 'New York City',
-    thumbnail: "../public/nyc.jpg",
+    title: 'New York City Winter 2024',
   },
 ];
 
@@ -51,19 +44,17 @@ const FileList = () => {
         <FileCard
           key={index}
           title={file.title}
-          thumbnail={file.thumbnail}
         />
       ))}
     </div>
   );
 };
 
-const FileCard = ({ title, thumbnail }) => {
-  console.log("Joe Mama");
+const FileCard = ({title}) => {
+  const navigate = useNavigate();
   return (
     <div className="file-card">
-      <img src={thumbnail} alt={`${title} thumbnail`} />
-      <h3>{title}</h3>
+      <button onClick={() => navigate("/map")} class="text-gray-800 text-center font-[sans-serif] font-bold">{title}</button>
     </div>
   );
 };
