@@ -22,8 +22,8 @@ const MyComponent = () => {
   useEffect(() => {
     function start() {
       gapi.client.init({
-        apiKey: 'YOUR_API_KEY',
-        clientId: 'YOUR_CLIENT_ID.apps.googleusercontent.com',
+        apiKey: 'AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs',
+        clientId: '144372321889-hp8qpnljq6kjdr20au827pfv7rvbv3kb.apps.googleusercontent.com',
         scope: 'https://www.googleapis.com/auth/photoslibrary.readonly',
         discoveryDocs: ['https://photoslibrary.googleapis.com/$discovery/rest?version=v1'],
       }).then(() => {
