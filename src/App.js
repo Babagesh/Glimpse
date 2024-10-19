@@ -33,7 +33,7 @@ export default function Login() {
         <div class="min-h-screen flex fle-col items-center justify-center py-6 px-4">
         <div class="border border-gray-300 rounded-lg p-6 max-w-md shadow-[0_2px_22px_-4px_rgba(93,96,127,0.2)] max-md:mx-auto">
         <form class="space-y-4">
-            <div class="text-[#cda882] text-center text-3xl font-extrabold text-large">
+            <div class="text-center text-3xl font-extrabold text-large bg-gradient-to-r from-[#cda882] to-[#eadbcb] inline-block text-transparent bg-clip-text">
                 Glimpses
             </div>
             <br/>
@@ -59,7 +59,7 @@ export default function Login() {
             </div>
             <br/>
             <div class="!mt-8">
-              <input className={'inputButton'} type="button" class="w-full shadow-xl py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-gray-600 hover:bg-gray-700 focus:outline-none" onClick={onSubmit} value={'Log in'} />
+              <input className={'inputButton'} type="button" class="w-full shadow-xl py-3 px-4 text-sm tracking-wide rounded-lg text-white focus:outline-none bg-gray-500" onClick={onSubmit} value={'Log in'} />
             </div>
         </form>
         </div>
