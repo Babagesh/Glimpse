@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import Home from './pages/home'
-import App from './App';
+//import App from './App';
 import Login from "./pages/login"
 import SignUp from "./pages/signup"
 import Glimpses from "./pages/glimpses"
@@ -24,10 +24,6 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <App/>,
-  },
-  {
-    path: "/test",
     element: <Login/>,
   },
   {

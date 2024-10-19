@@ -64,9 +64,9 @@ export default function Login() {
           onChange={(event) => setPassword(event.target.value)}
           className={"mt-4 w-96 h-12 border-b border-gray-300 rounded-lg p-2"}
         />
-        <div className="mt-8">
+        <Link className="mt-8">
           <input type="button" className="w-full text-lg shadow-xl py-2 px-8 text-sm tracking-wide rounded-lg text-white bg-slate-800" onClick={onSubmit} value={'Sign Up'} />
-        </div>
+        </Link>
         <Link to="/login" className="mt-4 text-sky-600 text-md">Back to Log In</Link>
       </div>
     </div>

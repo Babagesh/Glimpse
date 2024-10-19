@@ -3,7 +3,7 @@ import {Link} from "react-router-dom"
 
 function Navbar() {
   return (
-    <div className="fixed top-0 right-0 left-0 px-4 py-2.5 bg-transparent bg-blur-sm z-40 text-white flex justify-between align-center">
+    <div className="fixed top-0 right-0 left-0 px-4 py-2.5 bg-transparent backdrop-blur-sm z-40 text-white flex justify-between align-center">
       <Link to="/">
         <button className="text-xl">
           <p>Glimpses</p>
