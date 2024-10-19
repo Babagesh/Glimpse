@@ -17,7 +17,7 @@ function Navbar() {
             </button>
           </Link>
         )}
-        <Link to="/about">
+        <Link to="/testmap">
           <button className="ml-8">
             <p>About</p>
           </button>

@@ -9,7 +9,7 @@
 import React from "react"
 import {APIProvider, Map, Marker} from '@vis.gl/react-google-maps'
 
-export default function Login() {
+export default function MapTest() {
     const position = {lat: 61.2176, lng: -149.8997};
     return (
         <div>
