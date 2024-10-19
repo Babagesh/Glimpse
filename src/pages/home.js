@@ -35,6 +35,13 @@ export default function Home() {
             <div className="text-gray-100 text-5xl text-center font-bold leading-tight mt-4">
                 A Glimpse into the future.
             </div>
+
+            {/*Description*/}
+            <div className="py-4 mt-16 text-center text-3xl font-semibold text-gray-100 leading-loose">
+                Use a cutting edge AI model to generate potential new memories.
+                <br />
+                The future is at your fingertips.
+            </div>
         </div>
     </Layout>
   );

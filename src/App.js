@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom' 
+import { useNavigate } from 'react-router-dom'
 import { Outlet, Link } from "react-router-dom";
-import {  createUserWithEmailAndPassword  } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './database';
 
 export default function Login() {
@@ -14,18 +14,18 @@ export default function Login() {
 
     const onSubmit = async (e) => {
         e.preventDefault()
-  
+
         await createUserWithEmailAndPassword(auth, email, password)
-          .then((userCredential) => {
-              const user = userCredential.user;
-              console.log(user)
-              navigate("/glimpses")
-          })
-          .catch((error) => {
-              const errorCode = error.code;
-              const errorMessage = error.message;
-              console.log(errorCode, errorMessage);
-        });
+            .then((userCredential) => {
+                const user = userCredential.user;
+                console.log(user)
+                navigate("/glimpses")
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(errorCode, errorMessage);
+            });
     }
 
     return (
