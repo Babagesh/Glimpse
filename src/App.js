@@ -61,6 +61,34 @@ export default function Login() {
                         </div>
                 </div>
             </div>
+            <br/>
+            <div class="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none">
+                <input
+                    value = {email}
+                    placeholder = "Email"
+                    onChange = { (event) => setEmail(event.target.value)}
+                    className = {'inputBox'}
+                    class = "size-xxl"
+                />
+                <label className = "errorLabel">{emailError}</label>
+            </div>
+            <br/>
+            <div class="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none">
+                <input
+                    value = {password}
+                    placeholder = "Password"
+                    onChange = { (event) => setPassword(event.target.value)}
+                    className = {'inputBox'}
+                />
+                <label className = "errorLabel">{passwordError}</label>
+            </div>
+            <br/>
+            <div class="!mt-8">
+              <input className={'inputButton'} type="button" class="w-full shadow-xl py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-gray-600 hover:bg-gray-700 focus:outline-none" onClick={onSubmit} value={'Log in'} />
+            </div>
+        </form>
+        </div>
+        </div>
         </div>
     );
 }
