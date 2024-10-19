@@ -32,15 +32,15 @@ export default function glimpses() {
 const files = [
   {
     title: 'Chicago',
-    thumbnail: '../public/Globe.png',
+    thumbnail: "../public/chicago.jpg",
   },
   {
     title: 'San Francisco',
-    thumbnail: '../public/Globe.png',
+    thumbnail: "../public/sanfran.jpg",
   },
   {
     title: 'New York City',
-    thumbnail: '../public/Globe.png',
+    thumbnail: "../public/nyc.jpg",
   },
 ];
 
@@ -59,6 +59,7 @@ const FileList = () => {
 };
 
 const FileCard = ({ title, thumbnail }) => {
+  console.log("Joe Mama");
   return (
     <div className="file-card">
       <img src={thumbnail} alt={`${title} thumbnail`} />
