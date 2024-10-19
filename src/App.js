@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom' 
 import { Outlet, Link } from "react-router-dom";
+import './App.css';
 
 export default function Login() {
     const [email, setEmail] = useState('')
