@@ -33,7 +33,7 @@ export default function Login() {
         <div class="min-h-screen flex fle-col items-center justify-center py-6 px-4">
         <div class="border border-gray-300 rounded-lg p-6 max-w-md shadow-[0_2px_22px_-4px_rgba(93,96,127,0.2)] max-md:mx-auto">
         <form class="space-y-4">
-            <div class="text-gray-800 text-center text-3xl font-extrabold text-large">
+            <div class="text-[#cda882] text-center text-3xl font-extrabold text-large">
                 Glimpses
             </div>
             <br/>
