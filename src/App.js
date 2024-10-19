@@ -29,75 +29,42 @@ export default function Login() {
     }
 
     return (
-<<<<<<< HEAD
         <div className="font-[sans-serif]">
             <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
-                <div className="border border-gray-300 rounded-lg p-6 shadow-xl m-auto">
-                        <div className="text-gray-800 text-center text-3xl font-extrabold text-large">
-                            Glimpses
-                        </div>
-                        <br />
-                        <div className="size-xxl w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none">
-                            <input
-                                type={email}
-                                value={email}
-                                placeholder="Email"
-                                onChange={(event) => setEmail(event.target.value)}
-                            />
-                            <label className="errorLabel">{emailError}</label>
-                        </div>
-                        <br />
-                        <div className="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none">
-                            <input
-                                value={password}
-                                placeholder="Password"
-                                onChange={(event) => setPassword(event.target.value)}
-                                className={'inputBox'}
-                            />
-                            <label className="errorLabel">{passwordError}</label>
-                        </div>
-                        <br />
-                        <div className="!mt-8">
-                            <input type="button" className="w-full shadow-xl py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-gray-600 hover:bg-gray-700 focus:outline-none" onClick={onSubmit} value={'Log in'} />
-                        </div>
+                <div className="border border-gray-300 rounded-lg px-24 py-12 shadow-xl m-auto">
+                    <div className="text-gray-800 text-center text-3xl font-extrabold text-large">
+                        Glimpses
+                    </div>
+                    <br />
+                    <div className="bg-slate-950 size-xxl w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none">
+                        <input
+                            size={30}
+                            classname=""
+                            required
+                            type="text"
+                            value={email}
+                            placeholder="Email"
+                            onChange={(event) => setEmail(event.target.value)}
+                        />
+                        <label className="errorLabel">{emailError}</label>
+                    </div>
+                    <br />
+                    <div className="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none">
+                        <input
+                            value={password}
+                            required
+                            placeholder="Password"
+                            onChange={(event) => setPassword(event.target.value)}
+                            className={'inputBox'}
+                        />
+                        <label className="errorLabel">{passwordError}</label>
+                    </div>
+                    <br />
+                    <div className="mt-8">
+                        <input type="button" className="w-full shadow-xl py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-gray-600 hover:bg-gray-700 focus:outline-none" onClick={onSubmit} value={'Log in'} />
+                    </div>
                 </div>
-=======
-        <div class="font-[sans-serif]">
-        <div class="min-h-screen flex fle-col items-center justify-center py-6 px-4">
-        <div class="border border-gray-300 rounded-lg p-6 max-w-md shadow-[0_2px_22px_-4px_rgba(93,96,127,0.2)] max-md:mx-auto">
-        <form class="space-y-4">
-            <div class="text-[#cda882] text-center text-3xl font-extrabold text-large">
-                Glimpses
->>>>>>> 9c1891e07f59101fb000aa860e358752535e012c
             </div>
-            <br/>
-            <div class="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none">
-                <input
-                    value = {email}
-                    placeholder = "Email"
-                    onChange = { (event) => setEmail(event.target.value)}
-                    className = {'inputBox'}
-                    class = "size-xxl"
-                />
-                <label className = "errorLabel">{emailError}</label>
-            </div>
-            <br/>
-            <div class="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none">
-                <input
-                    value = {password}
-                    placeholder = "Password"
-                    onChange = { (event) => setPassword(event.target.value)}
-                    className = {'inputBox'}
-                />
-                <label className = "errorLabel">{passwordError}</label>
-            </div>
-            <br/>
-            <div class="!mt-8">
-              <input className={'inputButton'} type="button" class="w-full shadow-xl py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-gray-600 hover:bg-gray-700 focus:outline-none" onClick={onSubmit} value={'Log in'} />
-            </div>
-        </form>
-        </div>
-        </div>
         </div>
     );
 }
