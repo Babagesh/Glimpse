@@ -85,7 +85,7 @@ export default function Login() {
         />
         <div className="mt-8">
           <input type="button" className="w-full text-lg shadow-xl py-2 px-10 text-sm tracking-wide rounded-lg text-white bg-slate-800" onClick={onSubmit} value={'Log in'} />
-        </div>
+        </div>  
         <Link to="/signup" className="mt-4 text-sky-600 text-md">Sign Up</Link>
       </div>
     </div>
