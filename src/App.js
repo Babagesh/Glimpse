@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom' 
 import { Outlet, Link } from "react-router-dom";
+import {  createUserWithEmailAndPassword  } from 'firebase/auth';
+import { auth } from './database';
 
 export default function Login() {
     const [email, setEmail] = useState('')
@@ -10,8 +12,20 @@ export default function Login() {
 
     const navigate = useNavigate()
 
-    const onButtonClick = () => {
-      navigate("/login")
+    const onSubmit = async (e) => {
+        e.preventDefault()
+  
+        await createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+              const user = userCredential.user;
+              console.log(user)
+              navigate("/")
+          })
+          .catch((error) => {
+              const errorCode = error.code;
+              const errorMessage = error.message;
+              console.log(errorCode, errorMessage);
+        });
     }
 
     return (
@@ -41,7 +55,7 @@ export default function Login() {
             </div>
             <br/>
             <div>
-              <input className={'inputButton'} type="button" onClick={onButtonClick} value={'Log in'} />
+              <input className={'inputButton'} type="button" onClick={onSubmit} value={'Log in'} />
             </div>
         </div>
     );

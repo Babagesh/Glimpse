@@ -3,23 +3,23 @@ import {Link} from "react-router-dom"
 
 function Navbar() {
   return (
-    <div className="fixed top-0 right-0 left-0 px-4 py-2.5 bg-transparent backdrop-blur-sm z-40 text-white flex justify-between align-center">
+    <div className="fixed top-0 right-0 left-0 px-4 py-2.5 bg-transparent bg-blur-sm z-40 text-white flex justify-between align-center">
       <Link to="/">
         <button className="text-xl">
-          <text>Glimpses</text>
+          <p>Glimpses</p>
         </button>
       </Link>
       <div className="flex items-center">
         {(
           <Link to="/explore">
             <button className="ml-8">
-              <text>Explore</text>
+              <p>Explore</p>
             </button>
           </Link>
         )}
         <Link to="/about">
           <button className="ml-8">
-            <text>About</text>
+            <p>About</p>
           </button>
         </Link>
         {/*user.id ? (
@@ -32,7 +32,7 @@ function Navbar() {
         ) : */(
           <Link to="/login">
             <button className="ml-8 bg-blue-600 py-1 px-6 rounded-md">
-              <text>Login</text>
+              <p>Login</p>
             </button>
           </Link>
         )}
