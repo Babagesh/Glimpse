@@ -5,26 +5,28 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../database';
 
 export default function Login() {
-  //Handle Error Eventually
+  //Handle Error
   const [email, setEmail] = useState('')
+  const [confirmEmail, setConfirmEmail] = useState('')
   const [password, setPassword] = useState('')
 
   const navigate = useNavigate()
 
   const onSubmit = async (e) => {
-    e.preventDefault()
-
-    await createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user)
-        navigate("/glimpses")
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-      });
+    if (email == confirmEmail) {
+      e.preventDefault()
+      await createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log(user)
+          navigate("/login")
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode, errorMessage);
+        });
+    }
   }
 
   return (
@@ -42,6 +44,17 @@ export default function Login() {
           onChange={(event) => setEmail(event.target.value)}
           className={"mt-16 w-96 h-12 border-b border-gray-300 rounded-lg p-2"}
         />
+
+        <input
+          size={30}
+          required
+          type="text"
+          value={confirmEmail}
+          placeholder="Confirm Email"
+          onChange={(event) => setConfirmEmail(event.target.value)}
+          className={"mt-4 w-96 h-12 border-b border-gray-300 rounded-lg p-2"}
+        />
+
         <input
           size={30}
           type="text"
@@ -52,9 +65,9 @@ export default function Login() {
           className={"mt-4 w-96 h-12 border-b border-gray-300 rounded-lg p-2"}
         />
         <div className="mt-8">
-          <input type="button" className="w-full text-lg shadow-xl py-2 px-10 text-sm tracking-wide rounded-lg text-white bg-slate-800" onClick={onSubmit} value={'Log in'} />
+          <input type="button" className="w-full text-lg shadow-xl py-2 px-8 text-sm tracking-wide rounded-lg text-white bg-slate-800" onClick={onSubmit} value={'Sign Up'} />
         </div>
-        <Link to="/signup" className="mt-4 text-sky-600 text-md">Sign Up</Link>
+        <Link to="/login" className="mt-4 text-sky-600 text-md">Back to Log In</Link>
       </div>
     </div>
   );
