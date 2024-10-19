@@ -29,6 +29,7 @@ export default function Login() {
     }
 
     return (
+<<<<<<< HEAD
         <div className="font-[sans-serif]">
             <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
                 <div className="border border-gray-300 rounded-lg p-6 shadow-xl m-auto">
@@ -60,6 +61,14 @@ export default function Login() {
                             <input type="button" className="w-full shadow-xl py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-gray-600 hover:bg-gray-700 focus:outline-none" onClick={onSubmit} value={'Log in'} />
                         </div>
                 </div>
+=======
+        <div class="font-[sans-serif]">
+        <div class="min-h-screen flex fle-col items-center justify-center py-6 px-4">
+        <div class="border border-gray-300 rounded-lg p-6 max-w-md shadow-[0_2px_22px_-4px_rgba(93,96,127,0.2)] max-md:mx-auto">
+        <form class="space-y-4">
+            <div class="text-[#cda882] text-center text-3xl font-extrabold text-large">
+                Glimpses
+>>>>>>> 9c1891e07f59101fb000aa860e358752535e012c
             </div>
             <br/>
             <div class="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none">
