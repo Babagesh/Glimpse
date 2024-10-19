@@ -29,6 +29,27 @@ export default function Login() {
     }
 
     return (
+        <div className = "flex-col">
+            <form onSubmit={onSubmit}>
+                <input
+                    size={30}
+                    required
+                    type="text"
+                    value={email}
+                    placeholder="Email"
+                    onChange={(event) => setEmail(event.target.value)}
+                />
+                <input
+                    size={30}
+                    type="text"
+                    value={password}
+                    required
+                    placeholder="Password"
+                    onChange={(event) => setPassword(event.target.value)}
+                    className={"w-96 h-96"}
+                />
+            </form>
+        {/*
         <div className="font-[sans-serif]">
             <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
                 <div className="border border-gray-300 rounded-lg px-24 py-12 shadow-xl m-auto">
@@ -65,6 +86,8 @@ export default function Login() {
                     </div>
                 </div>
             </div>
+        </div>
+        */}
         </div>
     );
 }
