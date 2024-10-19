@@ -32,7 +32,7 @@ export default function Login() {
         <div className="font-[sans-serif]">
             <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
                 <div className="border border-gray-300 rounded-lg px-24 py-12 shadow-xl m-auto">
-                    <div className="text-gray-800 text-center text-3xl font-extrabold text-large">
+                    <div className="text-gray-800 text-center text-3xl font-extrabold text-large bg-gradient-to-r from-[#cda882] to-[#eadbcb] inline-block text-transparent bg-clip-text">
                         Glimpses
                     </div>
                     <br />
@@ -61,7 +61,7 @@ export default function Login() {
                     </div>
                     <br />
                     <div className="mt-8">
-                        <input type="button" className="w-full shadow-xl py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-gray-600 hover:bg-gray-700 focus:outline-none" onClick={onSubmit} value={'Log in'} />
+                        <input type="button" className="w-full shadow-xl py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-gray-600 hover:bg-gray-700 focus:outline-none bg-gradient-to-r from-[#cda882] to-[#eadbcb]" onClick={onSubmit} value={'Log in'} />
                     </div>
                 </div>
             </div>
