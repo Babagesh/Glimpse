@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Outlet, Link } from "react-router-dom";
+//import { Outlet, Link } from "react-router-dom";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './database';
 
@@ -29,8 +29,7 @@ export default function Login() {
     }
 
     return (
-        <div className = "flex-col">
-            <form onSubmit={onSubmit}>
+        <div className = "flex flex-col">
                 <input
                     size={30}
                     required
@@ -38,6 +37,7 @@ export default function Login() {
                     value={email}
                     placeholder="Email"
                     onChange={(event) => setEmail(event.target.value)}
+                    className={"w-64 h-12"}
                 />
                 <input
                     size={30}
@@ -46,9 +46,8 @@ export default function Login() {
                     required
                     placeholder="Password"
                     onChange={(event) => setPassword(event.target.value)}
-                    className={"w-96 h-96"}
+                    className={"w-64 h-12"}
                 />
-            </form>
         {/*
         <div className="font-[sans-serif]">
             <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
