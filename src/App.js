@@ -65,42 +65,6 @@ export default function Login() {
                     </div>
                 </div>
             </div>
-        <div class="font-[sans-serif]">
-        <div class="min-h-screen flex fle-col items-center justify-center py-6 px-4">
-        <div class="border border-gray-300 rounded-lg p-6 max-w-md shadow-[0_2px_22px_-4px_rgba(93,96,127,0.2)] max-md:mx-auto">
-        <form class="space-y-4">
-            <div class="text-center text-3xl font-extrabold text-large bg-gradient-to-r from-[#cda882] to-[#eadbcb] inline-block text-transparent bg-clip-text">
-                Glimpses
-            </div>
-            <br/>
-            <div class="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none">
-                <input
-                    value = {email}
-                    placeholder = "Email"
-                    onChange = { (event) => setEmail(event.target.value)}
-                    className = {'inputBox'}
-                    class = "size-xxl"
-                />
-                <label className = "errorLabel">{emailError}</label>
-            </div>
-            <br/>
-            <div class="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none">
-                <input
-                    value = {password}
-                    placeholder = "Password"
-                    onChange = { (event) => setPassword(event.target.value)}
-                    className = {'inputBox'}
-                />
-                <label className = "errorLabel">{passwordError}</label>
-            </div>
-            <br/>
-            <div class="!mt-8">
-              <input className={'inputButton'} type="button" class="w-full shadow-xl py-3 px-4 text-sm tracking-wide rounded-lg text-white focus:outline-none bg-gray-500" onClick={onSubmit} value={'Log in'} />
-            </div>
-        </form>
-        </div>
-        </div>
-        </div>
         </div>
     );
 }
