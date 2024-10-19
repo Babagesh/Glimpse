@@ -8,6 +8,7 @@ import {
 import Home from './pages/home'
 import App from './App';
 import Login from "./pages/login"
+import SignUp from "./pages/signup"
 import Glimpses from "./pages/glimpses"
 import './App.css';
 
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: "/test",
     element: <Login/>,
+  },
+  {
+    path: "/signup",
+    element: <SignUp/>,
   },
   {
     path: "/glimpses",
