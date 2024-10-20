@@ -3,8 +3,7 @@ import '../App.css';
 
 export default function Existing() {
   return (
-    <div>
-      <h1>Please enter a map code to create future glimpses on!</h1>
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <GlimpseInputField />
     </div>
   );
@@ -13,37 +12,44 @@ export default function Existing() {
 function GlimpseInputField() {
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
+  const [isValid, setIsValid] = useState(false);
 
   const handleChange = (e) => {
     setCode(e.target.value);
   };
 
   const handleSubmit = () => {
-    // Simulate saving the code
     if (code) {
-      setMessage(`Code "${code}" is valid! Welcome to your possible new memories!`);
+      setIsValid(true);
+      setMessage('Welcome to your possible new memories!');
     } else {
       setMessage('Please enter a valid code.');
     }
   };
 
   return (
-    <div>
-      <input
-        type="text"
-        size={30}
-        placeholder="Glimpse code"
-        value={code}
-        onChange={handleChange}
-        className="mt-16 w-96 h-12 border-b border-gray-300 rounded-lg p-2"
-      />
-      <input
-        type="button"
-        className="w-full text-lg shadow-xl py-2 px-10 text-sm tracking-wide rounded-lg text-white bg-slate-800"
-        onClick={handleSubmit}
-        value="Generate Glimpses"
-      />
-      {message && <p>{message}</p>}
+    <div className="flex flex-col items-center">
+      {!isValid ? (
+        <>
+          <h1 className="text-3xl font-bold mb-6">Create Future Glimpses</h1>
+          <input
+            type="text"
+            size={30}
+            placeholder="Enter Glimpse code"
+            value={code}
+            onChange={handleChange}
+            className="mb-4 w-80 h-12 border-b-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-500 transition"
+          />
+          <input
+            type="button"
+            className="mb-4 w-40 text-lg py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+            onClick={handleSubmit}
+            value="Generate Glimpses"
+          />
+        </>
+      ) : (
+        <p className="text-center text-gray-700">{message}</p>
+      )}
     </div>
   );
 }
