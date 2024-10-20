@@ -18,10 +18,8 @@ export default function Login() {
     await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        updateUser(user).then(() => {
-          console.log(getUser())
-          navigate("/glimpses")
-        })
+        sessionStorage.setItem('user', JSON.stringify(user));
+        navigate("/glimpses")
       })
       .catch((error) => {
         const errorCode = error.code;

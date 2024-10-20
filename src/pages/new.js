@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom'
-import {getUser} from "../data"
+import { getUser } from "../data"
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -24,14 +24,16 @@ const GlimpseForm = () => {
   const [glimpsePassword, setGlimpsePassword] = useState('');
 
   const navigate = useNavigate()
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const userData = sessionStorage.getItem('user');
+      const parseData = JSON.parse(userData) || null;
       const docRef = await addDoc(collection(db, 'maps'), {
         name: glimpseName,
         password: glimpsePassword,
-        users: [getUser().uid],
+        users: [parseData.uid],
         markers: []
       });
       alert('Data saved successfully!');
@@ -44,7 +46,7 @@ const GlimpseForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center"> 
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center">
       <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-md h-96 w-96">
         <h1 className="text-2xl font-bold mb-12 text-center">Glimpse Form</h1>
         <form onSubmit={handleSubmit} className="space-y-4 w-full"> {/* Ensured full width for the form */}

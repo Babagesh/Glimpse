@@ -3,7 +3,7 @@ import '../App.css';
 import { useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
-import {getUser} from "../data"
+import { getUser } from "../data"
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -29,32 +29,31 @@ export default function Glimpses() {
   );
 }
 
-
 const Taskbar = () => {
   const navigate = useNavigate();
   return (
-    <div className="absolute bottom-0 left-0 right-0 bg-blue-500 p-4 rounded-md shadow-md">
-      <div className="flex justify-around">
-        <div className="taskbar-option">
+    <div className="absolute bottom-0 left-0 right-0 bg-blue-500 pt-2 shadow-md"> {/* Removed rounded-md */}
+      <div className="flex flex-row items-center h-full"> {/* Keep items centered vertically */}
+        <div className="taskbar-option flex-1 text-center"> {/* Apply flex-1 for equal width */}
           <button
             onClick={() => navigate("/existing")}
-            className="text-white font-semibold hover:bg-blue-600 rounded-md px-4 py-2 transition"
+            className="text-white font-semibold hover:bg-blue-600 rounded-md px-4 py-2 transition w-full" // Ensure full width
           >
             Contribute To Glimpse
           </button>
         </div>
-        <div className="taskbar-option">
+        <div className="taskbar-option flex-1 text-center"> {/* Apply flex-1 for equal width */}
           <button
             onClick={() => navigate("/new")}
-            className="text-white font-semibold hover:bg-blue-600 rounded-md px-4 py-2 transition"
+            className="text-white font-semibold hover:bg-blue-600 rounded-md px-4 py-2 transition w-full" // Ensure full width
           >
             New Glimpse
           </button>
         </div>
-        <div className="taskbar-option">
+        <div className="taskbar-option flex-1 text-center"> {/* Apply flex-1 for equal width */}
           <button
             onClick={() => navigate("/future")}
-            className="text-white font-semibold hover:bg-blue-600 rounded-md px-4 py-2 transition"
+            className="text-white font-semibold hover:bg-blue-600 rounded-md px-4 py-2 transition w-full" // Ensure full width
           >
             Future Glimpse
           </button>
@@ -73,7 +72,10 @@ const FileList = () => {
     const fetchFiles = async () => {
       setLoading(true); // Set loading to true before fetching
       try {
-        const q = query(collection(db, 'maps'), where('users', 'array-contains', getUser().uid));
+        const userData = sessionStorage.getItem('user');
+        const parseData = JSON.parse(userData);
+        const uid = parseData.uid;
+        const q = query(collection(db, 'maps'), where('users', 'array-contains', uid));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
           const filesData = querySnapshot.docs.map(doc => ({
@@ -92,12 +94,16 @@ const FileList = () => {
 
     fetchFiles();
   }, []);
-  
+
   return (
-    <div className="flex justify-between flex-wrap p-4 rounded-md shadow-md flex-grow overflow-auto">
+    <div className="flex flex-col justify-start p-4 rounded-md shadow-md flex-grow overflow-auto"> {/* Adjusted for layout */}
       {loading ? (
         <div className="flex justify-center items-center w-full h-full"> {/* Center loading indicator */}
           <p className="text-gray-500">Loading...</p>
+        </div>
+      ) : files.length === 0 ? ( // Check if there are no file cards
+        <div className="flex justify-center items-center h-full"> {/* Center the message */}
+          <p className="text-gray-500 text-xl font-semibold">Create a Glimpse</p>
         </div>
       ) : (
         files.map((file) => (
@@ -113,16 +119,20 @@ const FileList = () => {
 };
 
 
+
 const FileCard = ({ title, id }) => {
   const navigate = useNavigate();
+
   return (
-    <div className="file-card bg-white rounded-md shadow-lg m-2 p-4 flex flex-col justify-center items-center min-w-[200px] h-32">
-      <button
-        onClick={() => navigate("/map", { state: { documentId: id } })} // Pass document ID
-        className="text-gray-800 text-center font-bold text-lg hover:underline"
-      >
-        {title ? title : "Loading..."}
-      </button>
+    <div
+      className="file-card bg-white rounded-md shadow-lg m-2 p-4 flex flex-col justify-center items-center h-32 w-1/4 cursor-pointer transition-transform duration-200 ease-in-out hover:bg-blue-50 hover:shadow-xl" // Added hover effects
+      onClick={() => navigate("/map", { state: { documentId: id } })} // Handle click on the card
+    >
+      <div className="flex flex-col justify-center items-center h-full">
+        <span className="text-gray-800 text-center font-bold text-lg hover:underline">
+          {title ? title : "Loading..."}
+        </span>
+      </div>
     </div>
   );
 };
