@@ -65,6 +65,7 @@ const ImageLocationFinder = () => {
   const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
     const newMarkers = [];
+<<<<<<< HEAD
     for (const file of files) {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -84,6 +85,50 @@ const ImageLocationFinder = () => {
           }
         });
       };
+=======
+  
+    // Use Promise.all to wait for all file processing
+    const filePromises = files.map((file) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+  
+        reader.onload = (event) => {
+          const imageUrl = event.target.result;
+          EXIF.getData(file, function () {
+            const latitude = EXIF.getTag(this, 'GPSLatitude');
+            const longitude = EXIF.getTag(this, 'GPSLongitude');
+            const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
+            const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
+            const width = EXIF.getTag(this, 'PixelXDimension');
+            const height = EXIF.getTag(this, 'PixelYDimension');
+  
+            const lat = convertDMSToDD(latitude, latRef);
+            const lng = convertDMSToDD(longitude, lonRef);
+  
+            if (lat && lng && width && height) {
+              newMarkers.push({ lat, lng, icon: imageUrl, width: Number(width), height: Number(height) });
+            }
+  
+            resolve(); // Resolve the promise once this file is processed
+          });
+        };
+      });
+    });
+  
+    // Wait for all files to be processed
+    await Promise.all(filePromises);
+  
+    // After all markers are processed, update Firestore
+    if (newMarkers.length > 0) {
+      const updatedMarkers = [...markers, ...newMarkers];
+      try {
+        await updateDoc(docRef, { markers: updatedMarkers });
+        setMarkers(updatedMarkers);
+      } catch (error) {
+        console.error("Error updating document: ", error);
+      }
+>>>>>>> 9c906d85612aedc4f986e2157e6609ef3b32f820
     }
 
     await new Promise((resolve) => {
@@ -111,6 +156,7 @@ const ImageLocationFinder = () => {
       }
     }
   };
+  
 
   const convertDMSToDD = (dms, ref) => {
     if (!dms) return null;
