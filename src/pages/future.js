@@ -38,6 +38,7 @@ function GlimpseInputField() {
   const [message, setMessage] = useState('');
   const [mapData, setMapData] = useState(null);
   const [markerIcons, setMarkerIcons] = useState([]);
+  const [generatedImages, setGeneratedImages] = useState([]); // State for generated images
 
   const handleCodeChange = (e) => {
     setCode(e.target.value);
@@ -84,6 +85,9 @@ function GlimpseInputField() {
           const icons = await fetchMarkerIcons();
           setMarkerIcons(icons);
           
+          // Generate images based on icons
+          await generateSimilarImages(icons);
+          
           setMessage(`Welcome to ${data.name || name}'s possible new memories`);
         } else {
           setMessage('No map found with the provided code.');
@@ -94,6 +98,27 @@ function GlimpseInputField() {
       }
     } else {
       setMessage('Please enter a valid code and name.');
+    }
+  };
+
+  const generateSimilarImages = async (icons) => {
+    try {
+      const response = await fetch('AIzaSyCB593aHPMQxYV_vUYk6qGS8eJsIbhpTl8', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer YOUR_API_KEY' // Replace with your API key
+        },
+        body: JSON.stringify({ icons })
+      });
+
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const data = await response.json();
+      setGeneratedImages(data.images || []); // Assuming the API returns an array of image URLs
+    } catch (error) {
+      console.error('Error generating images:', error);
+      setMessage('An error occurred while generating images.');
     }
   };
 
@@ -131,25 +156,17 @@ function GlimpseInputField() {
           />
         </>
       ) : (
-        <MapComponent mapData={mapData} markerIcons={markerIcons} />
+        <MapComponent mapData={mapData} markerIcons={markerIcons} generatedImages={generatedImages} />
       )}
     </div>
   );
 }
 
-const MapComponent = ({ mapData, markerIcons }) => {
+const MapComponent = ({ mapData, markerIcons, generatedImages }) => {
   const center = {
     lat: mapData.lat || 40.712776,
     lng: mapData.lng || -74.005974,
   };
-
-  // Prepare data for Google Gemini AI
-  const geminiData = {
-    mapCenter: center,
-    markerIcons: markerIcons,
-  };
-
-  console.log("Data for Gemini AI:", geminiData);
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
@@ -158,6 +175,11 @@ const MapComponent = ({ mapData, markerIcons }) => {
         center={center}
         zoom={10}
       />
+      <div className="image-gallery">
+        {generatedImages.map((imageUrl, index) => (
+          <img key={index} src={imageUrl} alt={`Generated ${index}`} className="generated-image" />
+        ))}
+      </div>
     </LoadScript>
   );
 };
