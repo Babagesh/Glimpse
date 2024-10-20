@@ -48,15 +48,15 @@ const router = createBrowserRouter([
     element: <New />
   },
   {
-    path: "future",
+    path: "/future",
     element: <Future />
   },
   {
-    path: "about",
+    path: "/about",
     element: <About />
   },
   {
-    path: "ourpurpose",
+    path: "/ourpurpose",
     element: <OurPurpose />
   }
 ]);

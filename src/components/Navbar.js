@@ -13,7 +13,7 @@ function Navbar() {
         {(
           <Link to="/ourpurpose">
             <button className="ml-8">
-              <p>Explore</p>
+              <p>Our Purpose</p>
             </button>
           </Link>
         )}
