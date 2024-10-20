@@ -66,40 +66,49 @@ const ImageLocationFinder = () => {
   }, []);
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const imageUrl = event.target.result;
-      EXIF.getData(file, function () {
-        const latitude = EXIF.getTag(this, 'GPSLatitude');
-        const longitude = EXIF.getTag(this, 'GPSLongitude');
-        const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
-        const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
-        const width = EXIF.getTag(this, 'PixelXDimension');
-        const height = EXIF.getTag(this, 'PixelYDimension');
+    const files = Array.from(e.target.files); // Convert FileList to array
+    const newMarkers = [];
 
-        const lat = convertDMSToDD(latitude, latRef);
-        const lng = convertDMSToDD(longitude, lonRef);
+    const processFile = (file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageUrl = event.target.result;
+        EXIF.getData(file, function () {
+          const latitude = EXIF.getTag(this, 'GPSLatitude');
+          const longitude = EXIF.getTag(this, 'GPSLongitude');
+          const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
+          const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
+          const width = EXIF.getTag(this, 'PixelXDimension');
+          const height = EXIF.getTag(this, 'PixelYDimension');
 
-        if (lat && lng) {
-          const newMarker = { lat, lng, icon: imageUrl };
-          updateDoc(docRef, {
-            markers: [...markers, newMarker]
-          })
-            .then(() => {
-              setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+          const lat = convertDMSToDD(latitude, latRef);
+          const lng = convertDMSToDD(longitude, lonRef);
+
+          if (lat && lng) {
+            newMarkers.push({ lat, lng, icon: imageUrl });
+            if (width && height) {
+              setImageSize({ h: height, w: width });
+            }
+          }
+
+          // Once all files are processed, update the markers in Firestore
+          if (newMarkers.length === files.length) {
+            updateDoc(docRef, {
+              markers: [...markers, ...newMarkers]
             })
-            .catch((error) => {
-              console.error("Error updating document: ", error);
-            });
-        }
-
-        if (width && height) {
-          setImageSize({ h: height, w: width });
-        }
-      });
+              .then(() => {
+                setMarkers((prevMarkers) => [...prevMarkers, ...newMarkers]);
+              })
+              .catch((error) => {
+                console.error("Error updating document: ", error);
+              });
+          }
+        });
+      };
+      reader.readAsDataURL(file);
     };
-    reader.readAsDataURL(file);
+
+    files.forEach(processFile); // Process each file
   };
 
   const convertDMSToDD = (dms, ref) => {
@@ -109,17 +118,20 @@ const ImageLocationFinder = () => {
   };
 
   const calculateScaledSize = (originalWidth, originalHeight, currentZoom) => {
-    const aspectRatio = originalWidth / originalHeight;
-    let newWidth, newHeight;
+    let newWidth = originalWidth;
+    let newHeight = originalHeight;
 
+    // Scale based on zoom level
     if (currentZoom < 2) {
       newWidth = Math.max(MIN_DIMENSION, originalWidth);
+      newHeight = (newWidth * originalHeight) / originalWidth; // Maintain aspect ratio
     } else {
+      const scaleFactor = (MAX_DIMENSION / originalWidth);
       newWidth = Math.min(MAX_DIMENSION, originalWidth);
+      newHeight = newWidth * (originalHeight / originalWidth);
     }
-    newHeight = newWidth / aspectRatio;
 
-    return { w: newWidth, h: newHeight };
+    return { w: Math.round(newWidth), h: Math.round(newHeight) };
   };
 
   const handleMarkerClick = (imageUrl) => {
@@ -154,7 +166,14 @@ const ImageLocationFinder = () => {
           })}
         </GoogleMap>
       </LoadScript>
-      <input id="files" type="file" accept="image/*" onChange={handleImageChange} style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 1 }} />
+      <input
+        id="files"
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        multiple // Allow multiple file selection
+        style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 1 }}
+      />
       
       {loading && (
         <div style={loadingStyle}>Loading memories...</div>
