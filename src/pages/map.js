@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import EXIF from 'exif-js';
 import { useLocation } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, updateDoc, doc } from 'firebase/firestore';
+import { getFirestore, updateDoc, doc, getDoc } from 'firebase/firestore';
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -30,19 +30,40 @@ const defaultCenter = {
   lng: -74.0060
 };
 
-const ZOOM_THRESHOLD = 2;
 const MIN_DIMENSION = 32;
-const MAX_DIMENSION = 32;
+const MAX_DIMENSION = 64;
 
 const ImageLocationFinder = () => {
   const [markers, setMarkers] = useState([]);
   const [imageSize, setImageSize] = useState({ w: 0, h: 0 });
   const [currentZoom, setCurrentZoom] = useState(3);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const location = useLocation();
   const { documentId } = location.state || {};
   const docRef = doc(db, 'maps', documentId);
+
+  useEffect(() => {
+    const fetchMarkers = async () => {
+      setLoading(true);
+      try {
+        const docSnapshot = await getDoc(docRef);
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          if (data.markers) {
+            setMarkers(data.markers);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching document: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMarkers();
+  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -62,26 +83,19 @@ const ImageLocationFinder = () => {
 
         if (lat && lng) {
           const newMarker = { lat, lng, icon: imageUrl };
-          setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
-
-          // Update Firestore with the new markers
           updateDoc(docRef, {
-            markers: [...markers, newMarker] // Ensure this is the correct structure
+            markers: [...markers, newMarker]
           })
-          .then(() => {
-            console.log("Document updated successfully!");
-          })
-          .catch((error) => {
-            console.error("Error updating document: ", error);
-          });
-        } else {
-          console.error("No EXIF data found or size.");
+            .then(() => {
+              setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+            })
+            .catch((error) => {
+              console.error("Error updating document: ", error);
+            });
         }
 
         if (width && height) {
           setImageSize({ h: height, w: width });
-        } else {
-          console.error("No EXIF data found or size.");
         }
       });
     };
@@ -96,16 +110,14 @@ const ImageLocationFinder = () => {
 
   const calculateScaledSize = (originalWidth, originalHeight, currentZoom) => {
     const aspectRatio = originalWidth / originalHeight;
-    let newWidth = originalWidth;
-    let newHeight = originalHeight;
+    let newWidth, newHeight;
 
-    if (currentZoom < ZOOM_THRESHOLD) {
-      newWidth = Math.max(MIN_DIMENSION, newWidth);
-      newHeight = newWidth / aspectRatio;
-    } else if (currentZoom >= ZOOM_THRESHOLD) {
-      newWidth = Math.min(MAX_DIMENSION, newWidth);
-      newHeight = newWidth / aspectRatio;
+    if (currentZoom < 2) {
+      newWidth = Math.max(MIN_DIMENSION, originalWidth);
+    } else {
+      newWidth = Math.min(MAX_DIMENSION, originalWidth);
     }
+    newHeight = newWidth / aspectRatio;
 
     return { w: newWidth, h: newHeight };
   };
@@ -126,7 +138,7 @@ const ImageLocationFinder = () => {
           center={defaultCenter}
           zoom={currentZoom}>
           {markers.map((marker, index) => {
-            const scaledSize = calculateScaledSize(imageSize.h, imageSize.w, currentZoom);
+            const scaledSize = calculateScaledSize(imageSize.w || MIN_DIMENSION, imageSize.h || MIN_DIMENSION, currentZoom);
             return (
               <Marker
                 key={index}
@@ -136,7 +148,7 @@ const ImageLocationFinder = () => {
                   scaledSize: new window.google.maps.Size(scaledSize.w, scaledSize.h),
                   anchor: new window.google.maps.Point(scaledSize.w / 2, scaledSize.h / 2),
                 }}
-                onClick={() => handleMarkerClick(marker.icon)} // Open modal on marker click
+                onClick={() => handleMarkerClick(marker.icon)}
               />
             );
           })}
@@ -144,7 +156,10 @@ const ImageLocationFinder = () => {
       </LoadScript>
       <input id="files" type="file" accept="image/*" onChange={handleImageChange} style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 1 }} />
       
-      {/* Modal for full-screen image display */}
+      {loading && (
+        <div style={loadingStyle}>Loading memories...</div>
+      )}
+
       {selectedImage && (
         <div style={modalStyle}>
           <img src={selectedImage} alt="Full Screen" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
@@ -153,6 +168,19 @@ const ImageLocationFinder = () => {
       )}
     </div>
   );
+};
+
+// Styles for loading message
+const loadingStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  padding: '10px 20px',
+  borderRadius: '5px',
+  boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
+  zIndex: 999,
 };
 
 // Styles for the modal
