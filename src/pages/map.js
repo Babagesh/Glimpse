@@ -227,7 +227,7 @@ const ImageLocationFinder = () => {
 
 
   return (
-    <div>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
         <GoogleMap
           mapContainerStyle={containerStyle}
@@ -240,25 +240,36 @@ const ImageLocationFinder = () => {
                 key={index}
                 position={{ lat: marker.lat, lng: marker.lng }}
                 icon={{
-                  url: marker.imageUrl || '', // Ensure this is a valid URL string
+                  url: marker.imageUrl || '',
                   scaledSize: new window.google.maps.Size(scaledSize.h, scaledSize.w),
                   anchor: new window.google.maps.Point(scaledSize.w / 2, scaledSize.h / 2),
                 }}
-                onClick={() => handleMarkerClick(marker)} // Trigger image display on click
+                onClick={() => handleMarkerClick(marker)}
               />
-
             );
           })}
         </GoogleMap>
-        {selectedImage && (
-          <div style={modalStyle}>
-            <img src={selectedImage} alt="Full Screen" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-            <button onClick={closeModal} style={closeButtonStyle}>Close</button>
-          </div>
-        )}
       </LoadScript>
+
+      {/* Render labels outside of the GoogleMap */}
+      {markers.map((marker, index) => (
+        <div key={index} style={{
+          position: 'absolute',
+          transform: 'translate(-50%, -100%)', // Center the label above the marker
+          left: `${marker.lng}px`, // Adjust the left position according to the marker's lng
+          top: `${marker.lat}px`,  // Adjust the top position according to the marker's lat
+          background: 'white',
+          padding: '5px',
+          borderRadius: '5px',
+          boxShadow: '0 0 5px rgba(0, 0, 0, 0.3)',
+          zIndex: 1000 // Ensure it appears above the map
+        }}>
+          {marker.label} {/* Adjust this to show whatever label you want */}
+        </div>
+      ))}
+
+      {/* Your other components like the file input and loading message */}
       <input id="files" type="file" accept="image/*" onChange={handleImageChange} style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 1 }} />
-      {/* Loading information */}
       {loading && (
         <div style={loadingStyle}>Loading memories...</div>
       )}
