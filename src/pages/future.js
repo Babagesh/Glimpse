@@ -37,6 +37,7 @@ function GlimpseInputField() {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [mapData, setMapData] = useState(null);
+  const [markerIcons, setMarkerIcons] = useState([]);
 
   const handleCodeChange = (e) => {
     setCode(e.target.value);
@@ -46,8 +47,8 @@ function GlimpseInputField() {
     setName(e.target.value);
   };
 
-  const fetchImages = async () => {
-    const urls = [];
+  const fetchMarkerIcons = async () => {
+    const icons = [];
     try {
       const q = query(collection(db, 'maps'), where('password', '==', code));
       const querySnapshot = await getDocs(q);
@@ -55,28 +56,34 @@ function GlimpseInputField() {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         if (data.icon) {
-          urls.push(data.icon);
+          icons.push(data.icon);
+        } else {
+          console.warn("No icon found in document:", doc.id); // Log missing icon
         }
       });
 
-      return urls;
+      return icons;
     } catch (error) {
-      console.error("Error fetching images: ", error);
-      setMessage('An error occurred while fetching images.');
+      console.error("Error fetching marker icons: ", error);
+      setMessage('An error occurred while fetching marker icons.');
     }
   };
 
   const handleSubmit = async () => {
     if (code && name) {
       try {
-        // Querying the 'maps' collection using the password field
         const q = query(collection(db, 'maps'), where('password', '==', code));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          const data = querySnapshot.docs[0].data(); // Get the first matching map document
-          console.log("Map Data:", data); // Debugging log
-          setMapData(data); // Set the map data
+          const data = querySnapshot.docs[0].data();
+          console.log("Map Data:", data);
+          setMapData(data);
+
+          // Fetch marker icons after setting map data
+          const icons = await fetchMarkerIcons();
+          setMarkerIcons(icons);
+          
           setMessage(`Welcome to ${data.name || name}'s possible new memories`);
         } else {
           setMessage('No map found with the provided code.');
@@ -124,17 +131,25 @@ function GlimpseInputField() {
           />
         </>
       ) : (
-        <MapComponent mapData={mapData} />
+        <MapComponent mapData={mapData} markerIcons={markerIcons} />
       )}
     </div>
   );
 }
 
-const MapComponent = ({ mapData }) => {
+const MapComponent = ({ mapData, markerIcons }) => {
   const center = {
-    lat: mapData.lat || 40.712776, // Use lat from mapData or default
-    lng: mapData.lng || -74.005974, // Use lng from mapData or default
+    lat: mapData.lat || 40.712776,
+    lng: mapData.lng || -74.005974,
   };
+
+  // Prepare data for Google Gemini AI
+  const geminiData = {
+    mapCenter: center,
+    markerIcons: markerIcons,
+  };
+
+  console.log("Data for Gemini AI:", geminiData);
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
