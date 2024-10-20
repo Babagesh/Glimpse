@@ -12,7 +12,7 @@ import SignUp from "./pages/signup"
 import Glimpses from "./pages/glimpses"
 import Map from "./pages/map"
 import Existing from "./pages/existing"
-import New from "./pages/neww"
+import New from "./pages/new"
 import Future from "./pages/future"
 import './App.css';
 
@@ -42,7 +42,7 @@ const router = createBrowserRouter([
     element: <Existing />
   },
   {
-    path: "/neww",
+    path: "/new",
     element: <New />
   },
   {

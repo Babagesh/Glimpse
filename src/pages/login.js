@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Link } from "react-router-dom";
 import { signInWithEmailAndPassword} from 'firebase/auth';
 import { auth } from '../database';
-import Data from "../ data"
+import {getUser, updateUser} from "../data"
 
 export default function Login() {
   //Handle Error Eventually
@@ -18,9 +18,10 @@ export default function Login() {
     await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        Data.user = user;
-        console.log(user)
-        navigate("/glimpses")
+        updateUser(user).then(() => {
+          console.log(getUser())
+          navigate("/glimpses")
+        })
       })
       .catch((error) => {
         const errorCode = error.code;

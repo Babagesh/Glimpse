@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom'
+import {getUser} from "../data"
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -30,6 +31,7 @@ const GlimpseForm = () => {
       const docRef = await addDoc(collection(db, 'maps'), {
         name: glimpseName,
         password: glimpsePassword,
+        users: [getUser().uid],
         markers: []
       });
       alert('Data saved successfully!');

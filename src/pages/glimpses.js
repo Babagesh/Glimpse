@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
+import {getUser} from "../data"
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -21,7 +22,7 @@ const db = getFirestore(app);
 
 export default function Glimpses() {
   return (
-    <div className="flex flex-col h-screen bg-slate-100"> {/* Set background color here */}
+    <div className="flex flex-col h-screen bg-slate-100">
       <FileList />
       <Taskbar />
     </div>
@@ -44,7 +45,7 @@ const Taskbar = () => {
         </div>
         <div className="taskbar-option">
           <button
-            onClick={() => navigate("/neww")}
+            onClick={() => navigate("/new")}
             className="text-white font-semibold hover:bg-blue-600 rounded-md px-4 py-2 transition"
           >
             New Glimpse
@@ -72,13 +73,16 @@ const FileList = () => {
     const fetchFiles = async () => {
       setLoading(true); // Set loading to true before fetching
       try {
-        const querySnapshot = await getDocs(collection(db, 'maps'));
-        const filesData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        console.log(filesData);
-        setFiles(filesData);
+        const q = query(collection(db, 'maps'), where('users', 'array-contains', getUser().uid));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const filesData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          console.log(filesData);
+          setFiles(filesData);
+        }
       } catch (error) {
         console.error("Error fetching documents: ", error);
       } finally {
