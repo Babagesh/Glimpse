@@ -40,7 +40,7 @@ const GlimpseForm = () => {
       const docRef = await addDoc(collection(db, 'maps'), {
         name: glimpseName,
         password: glimpsePassword,
-        location: []
+        markers: []
       });
       alert('Data saved successfully!');
       setGlimpseName('');
