@@ -1,10 +1,10 @@
 import React from 'react';
 import '../App.css';
-import { useNavigate } from 'react-router-dom' 
+import { useNavigate } from 'react-router-dom';
 
-export default function glimpses() {
+export default function Glimpses() {
   return (
-    <div>
+    <div className="flex flex-col h-screen">
       <FileList />
       <Taskbar />
     </div>
@@ -14,16 +14,26 @@ export default function glimpses() {
 const Taskbar = () => {
   const navigate = useNavigate();
   return (
-    <div className="taskbar">
+    <div className="flex justify-around bg-blue-500 p-4 rounded-md shadow-md mb-6">
       <div className="taskbar-option">
-        <button onClick={() => navigate("/existing")}>Contribute To Glimpse</button>
-        </div>
+        <button
+          onClick={() => navigate("/existing")}
+          className="text-white font-semibold hover:bg-blue-600 rounded-md px-4 py-2 transition"
+        >
+          Contribute To Glimpse
+        </button>
+      </div>
       <div className="taskbar-option">
-        <button onClick={() => navigate("/neww")}>New Glimpse</button>
-        </div>
+        <button
+          onClick={() => navigate("/neww")}
+          className="text-white font-semibold hover:bg-blue-600 rounded-md px-4 py-2 transition"
+        >
+          New Glimpse
+        </button>
+      </div>
     </div>
   );
-}
+};
 
 const files = [
   {
@@ -39,7 +49,7 @@ const files = [
 
 const FileList = () => {
   return (
-    <div className="justify-between flex p-4 flex-row bg-slate-100">
+    <div className="flex justify-between flex-wrap p-4 bg-slate-100 rounded-md shadow-md flex-grow overflow-auto">
       {files.map((file, index) => (
         <FileCard
           key={index}
@@ -50,11 +60,16 @@ const FileList = () => {
   );
 };
 
-const FileCard = ({title}) => {
+const FileCard = ({ title }) => {
   const navigate = useNavigate();
   return (
-    <div className="file-card">
-      <button onClick={() => navigate("/map")} className="text-gray-800 text-center font-[sans-serif] font-bold">{title}</button>
+    <div className="file-card bg-white rounded-md shadow-lg m-2 p-4 flex flex-col justify-center items-center min-w-[200px] h-32">
+      <button
+        onClick={() => navigate("/map")}
+        className="text-gray-800 text-center font-bold text-lg hover:underline"
+      >
+        {title}
+      </button>
     </div>
   );
 };
