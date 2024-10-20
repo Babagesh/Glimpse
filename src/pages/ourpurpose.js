@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import Layout from "../components/Layout";
 
 // Images
-import globe from "../public/Globe.jpg";
-import timeline from "../public/timeline.png";
+import purposeImage from "../public/people.jpg";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -16,11 +15,11 @@ const scaleIn = {
   visible: { opacity: 1, scale: 1 },
 };
 
-export default function Home() {
+export default function OurPurpose() {
   return (
     <Layout>
       <div className="bg-black text-gray-100 pb-16">
-        {/* Introduction */}
+        {/* Title */}
         <motion.div
           className="w-11/12 md:w-3/4 lg:w-2/3 m-auto flex flex-col items-center pt-16"
           initial="hidden"
@@ -29,19 +28,8 @@ export default function Home() {
           transition={{ duration: 0.8 }}
         >
           <h1 className="text-6xl text-center font-extrabold leading-tight">
-            Memories
-            <br />
-            Across the Globe
+            Our Purpose
           </h1>
-          <motion.img
-            src={globe}
-            className="mt-8 rounded-lg shadow-lg transition-transform"
-            alt="Globe"
-            initial="hidden"
-            animate="visible"
-            variants={scaleIn}
-            transition={{ duration: 0.8, delay: 0.1}}
-          />
         </motion.div>
 
         {/* Description */}
@@ -52,21 +40,27 @@ export default function Home() {
           variants={fadeInUp}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          Combine all of your favorite memories onto one giant collaborative map.
+          Our app is designed to help you organize and cherish your memories 
+          in an easy and accessible way. 
           <br />
-          Build your own past, full of those meaningful events.
+          We understand that remembering special moments can be challenging, 
+          especially for those who may struggle with memory retention.
         </motion.div>
 
-        <motion.h2
-          className="text-5xl text-center font-bold leading-tight mt-24 mb-4"
+        {/* Additional Description */}
+        <motion.div
+          className="py-4 mt-4 text-center text-3xl font-semibold leading-loose"
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          A Glimpse into the past,
-        </motion.h2>
-        
+          With our intuitive platform, you can effortlessly capture, 
+          store, and revisit your treasured memories whenever you need a 
+          reminder of the beautiful experiences in your life.
+        </motion.div>
+
+        {/* Image Section */}
         <motion.div
           className="w-11/12 md:w-3/4 lg:w-2/3 m-auto flex flex-col items-center p-8"
           initial="hidden"
@@ -75,33 +69,21 @@ export default function Home() {
           transition={{ duration: 0.8, delay: 0.8 }}
         >
           <img
-            src={timeline}
+            src={purposeImage}
             className="rounded-lg shadow-lg transition-transform transform hover:scale-105"
-            alt="Timeline"
+            alt="Our Purpose"
           />
         </motion.div>
 
-        <motion.h2
-          className="text-5xl text-center font-bold leading-tight mt-4"
-          initial="hidden"
-          animate="visible"
-          variants={fadeInUp}
-          transition={{ duration: 0.8, delay: 1 }}
-        >
-          A Glimpse into the future.
-        </motion.h2>
-
-        {/* Description */}
+        {/* Closing Statement */}
         <motion.div
           className="py-4 mt-16 text-center text-3xl font-semibold leading-loose"
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
-          transition={{ duration: 0.8, delay: 1.2 }}
+          transition={{ duration: 0.8, delay: 1 }}
         >
-          Use a cutting-edge AI model to generate potential new memories.
-          <br />
-          The future is at your fingertips.
+          Join us on this journey to create and celebrate memories that matter.
         </motion.div>
       </div>
     </Layout>

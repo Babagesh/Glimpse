@@ -14,6 +14,8 @@ import Map from "./pages/map"
 import Existing from "./pages/existing"
 import New from "./pages/new"
 import Future from "./pages/future"
+import About from "./pages/about"
+import OurPurpose from "./pages/ourpurpose"
 import './App.css';
 
 const router = createBrowserRouter([
@@ -48,6 +50,14 @@ const router = createBrowserRouter([
   {
     path: "future",
     element: <Future />
+  },
+  {
+    path: "about",
+    element: <About />
+  },
+  {
+    path: "ourpurpose",
+    element: <OurPurpose />
   }
 ]);
 

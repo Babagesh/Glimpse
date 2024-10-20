@@ -11,7 +11,7 @@ function Navbar() {
       </Link>
       <div className="flex items-center">
         {(
-          <Link to="/explore">
+          <Link to="/ourpurpose">
             <button className="ml-8">
               <p>Explore</p>
             </button>
