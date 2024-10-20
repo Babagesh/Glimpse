@@ -31,16 +31,16 @@ export default function Home() {
           <h1 className="text-6xl text-center font-extrabold leading-tight">
             Memories
             <br />
-            Across the globe
+            Across the Globe
           </h1>
           <motion.img
             src={globe}
-            className="mt-8 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+            className="mt-8 rounded-lg shadow-lg transition-transform"
             alt="Globe"
             initial="hidden"
             animate="visible"
             variants={scaleIn}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.1}}
           />
         </motion.div>
 
