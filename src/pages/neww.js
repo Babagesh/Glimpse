@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import db  from '../database';
+import { addDocument } from "../database"
 
 const mapContainerStyle = {
   height: "400px",
@@ -21,7 +22,12 @@ const GlimpseForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, 'glimpses'), {
+      /*await addDoc(collection(db, 'glimpses'), {
+        name: glimpseName,
+        password: glimpsePassword,
+        location: location
+      });*/
+      addDocument("maps", {
         name: glimpseName,
         password: glimpsePassword,
         location: location

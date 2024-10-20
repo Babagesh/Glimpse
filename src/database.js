@@ -23,7 +23,6 @@ const db = getFirestore(app);
 export const auth = getAuth(app);
 export default app;
 
-/*
 export function addDocument(collection, data) {
     return new Promise((Resolve, Reject) => {
         db.collection(collection).add(data).then((data) => {
@@ -110,7 +109,7 @@ export function useCollection2(collection, orderBy) {
     }, [collection, orderBy])
 
     return { loading, data }
-}
+}*/
 
 export function useCollection(collection, orderBy, order) {
     return new Promise((Resolve) => {
@@ -139,4 +138,4 @@ export function getFromRef(ref) {
             Resolve(snap.data());
         })
     })
-}*/
+}
