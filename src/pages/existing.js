@@ -57,7 +57,7 @@ function GlimpseInputField() {
       if (lat && lng) {
         const latitude = convertToDecimal(lat);
         const longitude = convertToDecimal(lng);
-        setLocation({ lat: latitude, lng: longitude });
+        setLocation({ lat: latitude, lng: longitude }); // Update location state
         setMessage(`Location guessed from image: (${latitude}, ${longitude})`);
       } else {
         setMessage('No GPS data found in the image.');
