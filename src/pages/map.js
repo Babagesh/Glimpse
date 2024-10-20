@@ -4,7 +4,7 @@ import EXIF from 'exif-js';
 import { useLocation } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import { collection, getFirestore, updateDoc, doc, getDoc, addDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Import these
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -89,15 +89,12 @@ const ImageLocationFinder = () => {
       img.src = imageUrl;
 
       img.onload = async () => {
-        // Create a canvas to resize the image
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
-        // Calculate new dimensions while maintaining aspect ratio
         let width = img.width;
         let height = img.height;
 
-        // Resize logic based on max dimensions
         if (width > height) {
           if (width > 1080) {
             height *= (1080 / width);
@@ -110,40 +107,23 @@ const ImageLocationFinder = () => {
           }
         }
 
-        // Set canvas dimensions
         canvas.width = width;
         canvas.height = height;
-
-        // Draw the resized image to the canvas
         ctx.drawImage(img, 0, 0, width, height);
-
-        // Get the compressed image data URL
         const compressedImageUrl = canvas.toDataURL('image/jpeg', 0.8);
 
-        // Log the compressed image URL to check if it’s valid
-        console.log("Compressed Image URL:", compressedImageUrl);
-
-        // Check if compressedImageUrl is a string before creating a Blob
         if (typeof compressedImageUrl !== 'string') {
           console.error("Compressed image URL is not a valid string.");
           return;
         }
 
-        // Create a Blob from the compressed data URL
         const blob = await (await fetch(compressedImageUrl)).blob();
-
-        // Create a storage reference
         const storageRef = ref(storage, `images/${file.name}`);
 
-        // Upload the image to Cloud Storage
         uploadBytes(storageRef, blob).then(async (snapshot) => {
-          // Get the download URL
           const downloadURL = await getDownloadURL(snapshot.ref);
-
-          // Now proceed to save `downloadURL` in Firestore
           const docSnapshot = await getDoc(docRef);
           const data = docSnapshot.exists() ? docSnapshot.data() : { markers: [], name: '', password: '' };
-
           data.markers = Array.isArray(data.markers) ? data.markers : [];
 
           EXIF.getData(file, async function () {
@@ -157,17 +137,13 @@ const ImageLocationFinder = () => {
             const lng = convertDMSToDD(longitude, lonRef);
 
             if (lat && lng && width && height) {
-              // Save downloadURL, width, and height as fields in Firestore under the "images" collection
               const imageDoc = await addDoc(collection(db, 'images'), {
-                imageUrl: downloadURL, // Save the download URL here
+                imageUrl: downloadURL,
                 width,
                 height
               });
 
-              // Store the document reference as the marker's icon
               const newMarker = { lat, lng, icon: imageDoc.id };
-
-              // Update Firestore with the new marker data
               const updatedData = {
                 ...data,
                 markers: [...data.markers, newMarker]
@@ -197,8 +173,6 @@ const ImageLocationFinder = () => {
     reader.readAsDataURL(file);
   };
 
-
-
   const convertDMSToDD = (dms, ref) => {
     if (!dms) return null;
     const degrees = dms[0] + dms[1] / 60 + dms[2] / 3600;
@@ -225,7 +199,6 @@ const ImageLocationFinder = () => {
     setSelectedImage(null); // Set selectedImage to null to close the modal
   };
 
-
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
@@ -241,7 +214,7 @@ const ImageLocationFinder = () => {
                 position={{ lat: marker.lat, lng: marker.lng }}
                 icon={{
                   url: marker.imageUrl || '',
-                  scaledSize: new window.google.maps.Size(scaledSize.h, scaledSize.w),
+                  scaledSize: new window.google.maps.Size(scaledSize.w, scaledSize.w),
                   anchor: new window.google.maps.Point(scaledSize.w / 2, scaledSize.h / 2),
                 }}
                 onClick={() => handleMarkerClick(marker)}
@@ -255,23 +228,31 @@ const ImageLocationFinder = () => {
       {markers.map((marker, index) => (
         <div key={index} style={{
           position: 'absolute',
-          transform: 'translate(-50%, -100%)', // Center the label above the marker
-          left: `${marker.lng}px`, // Adjust the left position according to the marker's lng
-          top: `${marker.lat}px`,  // Adjust the top position according to the marker's lat
+          transform: 'translate(-50%, -100%)',
+          left: `${marker.lng}px`,
+          top: `${marker.lat}px`,
           background: 'white',
           padding: '5px',
           borderRadius: '5px',
           boxShadow: '0 0 5px rgba(0, 0, 0, 0.3)',
-          zIndex: 1000 // Ensure it appears above the map
+          zIndex: 1000
         }}>
           {marker.label} {/* Adjust this to show whatever label you want */}
         </div>
       ))}
 
-      {/* Your other components like the file input and loading message */}
+      {/* File input and loading message */}
       <input id="files" type="file" accept="image/*" onChange={handleImageChange} style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 1 }} />
       {loading && (
         <div style={loadingStyle}>Loading memories...</div>
+      )}
+
+      {/* Modal for displaying the selected image */}
+      {selectedImage && (
+        <div style={modalStyle} onClick={closeModal}>
+          <img src={selectedImage} alt="Selected" style={{ maxWidth: '90%', maxHeight: '90%' }} />
+          <button onClick={closeModal} style={closeButtonStyle}>Close</button>
+        </div>
       )}
     </div>
   );
@@ -289,7 +270,6 @@ const loadingStyle = {
   boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
   zIndex: 999,
 };
-
 
 // Styles for the modal
 const modalStyle = {
