@@ -40,10 +40,6 @@ const router = createBrowserRouter([
     path: "/existing",
     element: <Existing />
   },
-  {
-    path: "/neww",
-    element: <New />
-  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

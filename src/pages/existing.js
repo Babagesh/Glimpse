@@ -4,7 +4,7 @@ import '../App.css';
 export default function Existing() {
   return (
     <div>
-      <h1>Please enter a glimpse code to contribute to!</h1>
+      <h1>Please enter a map code to contribute to!</h1>
       <GlimpseInputField />
     </div>
   );
@@ -21,7 +21,7 @@ function GlimpseInputField() {
   const handleSubmit = () => {
     // Simulate saving the code
     if (code) {
-      setMessage(`Code "${code}" saved successfully!`);
+      setMessage(`Code "${code}" is valid! Welcome to {person's} memories!`);
     } else {
       setMessage('Please enter a valid code.');
     }

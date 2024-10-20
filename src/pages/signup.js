@@ -57,7 +57,7 @@ export default function Login() {
 
         <input
           size={30}
-          type="text"
+          type="password"
           value={password}
           required
           placeholder="Password"
