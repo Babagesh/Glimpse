@@ -11,6 +11,8 @@ import Login from "./pages/login"
 import SignUp from "./pages/signup"
 import Glimpses from "./pages/glimpses"
 import Map from "./pages/map"
+import Existing from "./pages/existing"
+import New from "./pages/new"
 import './App.css';
 
 const router = createBrowserRouter([
@@ -33,6 +35,14 @@ const router = createBrowserRouter([
   {
     path: "/glimpses",
     element: <Glimpses />,
+  },
+  {
+    path: "/existing",
+    element: <Existing />
+  },
+  {
+    path: "/new",
+    element: <New />
   }
 ]);
 
