@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleMap, LoadScript } from '@react-google-maps/api';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import '../App.css';
+import {getUser} from "../data"
 
 // Firebase configuration
 const firebaseConfig = {
@@ -60,7 +61,7 @@ function GlimpseInputField() {
         // Query the 'maps' collection to find matching name and password
         const q = query(collection(db, 'maps'), where('password', '==', code), where('name', '==', name));
         const querySnapshot = await getDocs(q);
-
+  
         if (!querySnapshot.empty) {
           setMessage(`Welcome to ${name}!`);
           setShowMap(true);
@@ -71,6 +72,24 @@ function GlimpseInputField() {
             title: doc.data().name
           }));
           setFileCards(cards);
+  
+          // Append userData().uid to the users array in each document
+          const uid = getUser().uid; // Assuming getUser() retrieves user data
+  
+          await Promise.all(
+            querySnapshot.docs.map(async (doc) => {
+              const data = doc.data();
+              const users = data.users || []; // Default to an empty array if users doesn't exist
+              
+              // Check if the user's UID is not already in the users array
+              if (!users.includes(uid)) {
+                users.push(uid); // Append the UID
+                // Update the document with the new users array
+                await updateDoc(doc.ref, { users: users });
+              }
+            })
+          );
+  
           navigate('/glimpses'); // Navigate to /glimpses
         } else {
           setMessage('No map found with the provided name and code.');
@@ -83,6 +102,7 @@ function GlimpseInputField() {
       setMessage('Please enter a valid code and name.');
     }
   };
+  
 
   return (
     <div className="flex flex-col items-center w-full h-full">
