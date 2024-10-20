@@ -136,17 +136,26 @@ const ImageLocationFinder = () => {
     return (ref === 'S' || ref === 'W') ? -degrees : degrees;
   };
 
-const calculateScaledSize = (originalWidth, originalHeight, currentZoom) => {
-  let newWidth = originalWidth;
-  let newHeight = originalHeight;
+  const calculateScaledSize = (originalWidth, originalHeight, currentZoom) => {
+    const aspectRatio = originalWidth / originalHeight;
+    let newWidth, newHeight;
+    if (currentZoom < 2) {
+      newWidth = Math.max(MIN_DIMENSION, originalWidth);
+    } else {
+      newWidth = Math.min(MAX_DIMENSION, originalWidth);
+    }
+    newHeight = newWidth / aspectRatio;
+    return { w: newWidth, h: newHeight };
+  };
 
   const handleMarkerClick = (marker) => {
     setSelectedImage(marker.imageUrl); // Set the image URL from the marker to open it in a modal
   };
-
+  
   const closeModal = () => {
     setSelectedImage(null); // Set selectedImage to null to close the modal
   };
+  
 
   return (
     <div>
