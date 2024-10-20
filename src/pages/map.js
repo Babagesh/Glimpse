@@ -35,7 +35,6 @@ const MAX_DIMENSION = 64;
 
 const ImageLocationFinder = () => {
   const [markers, setMarkers] = useState([]);
-  const [imageSize, setImageSize] = useState({ w: 0, h: 0 });
   const [currentZoom, setCurrentZoom] = useState(3);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -85,10 +84,7 @@ const ImageLocationFinder = () => {
           const lng = convertDMSToDD(longitude, lonRef);
 
           if (lat && lng) {
-            newMarkers.push({ lat, lng, icon: imageUrl });
-            if (width && height) {
-              setImageSize({ h: height, w: width });
-            }
+            newMarkers.push({ lat, lng, icon: imageUrl, width, height }); // Store width and height
           }
 
           // Once all files are processed, update the markers in Firestore
@@ -150,7 +146,7 @@ const ImageLocationFinder = () => {
           center={defaultCenter}
           zoom={currentZoom}>
           {markers.map((marker, index) => {
-            const scaledSize = calculateScaledSize(imageSize.w || MIN_DIMENSION, imageSize.h || MIN_DIMENSION, currentZoom);
+            const scaledSize = calculateScaledSize(marker.width || MIN_DIMENSION, marker.height || MIN_DIMENSION, currentZoom);
             return (
               <Marker
                 key={index}
