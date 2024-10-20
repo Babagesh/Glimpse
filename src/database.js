@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { collection, addDoc } from "firebase/firestore"; 
 
 const firebaseConfig = {
     apiKey: "AIzaSyDRv2sUSBbgsnoJsT1LnUcsE6eFaXXzlDk",
@@ -25,10 +26,8 @@ export default app;
 
 export function addDocument(collection, data) {
     return new Promise((Resolve, Reject) => {
-        app.c
-        db.collection(collection).add(data).then((data) => {
-            Resolve(data.id)
-        })
+        addDoc(collection(db, collection), data)
+        Resolve(data.id)
     })
 }
 
