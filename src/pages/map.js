@@ -4,11 +4,7 @@ import EXIF from 'exif-js';
 import { useLocation } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import { collection, getFirestore, updateDoc, doc, getDoc, addDoc } from 'firebase/firestore';
-<<<<<<< HEAD
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-=======
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Import these
->>>>>>> 5f9acddcee7c022581643149202a07b584a7de48
 
 // Firebase configuration
 const firebaseConfig = {
@@ -24,11 +20,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-<<<<<<< HEAD
-const storage = getStorage(app);
-=======
 const storage = getStorage(app); // Initialize storage
->>>>>>> 5f9acddcee7c022581643149202a07b584a7de48
 
 const containerStyle = {
   width: '100vw',
@@ -61,6 +53,7 @@ const ImageLocationFinder = () => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
           if (data.markers) {
+            // Fetch image URL for each marker
             const updatedMarkers = await Promise.all(
               data.markers.map(async (marker) => {
                 const imageRef = doc(db, 'images', marker.icon);
@@ -88,22 +81,12 @@ const ImageLocationFinder = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-<<<<<<< HEAD
-    const storageRef = ref(storage, `images/${file.name}`);
-
-    // Upload the image to Firebase Storage
-    uploadBytes(storageRef, file).then(async (snapshot) => {
-      const imageUrl = await getDownloadURL(snapshot.ref);
-      const docSnapshot = await getDoc(docRef);
-      const data = docSnapshot.exists() ? docSnapshot.data() : { markers: [], name: '', password: '' };
-=======
     const reader = new FileReader();
 
     reader.onload = async (event) => {
       const imageUrl = event.target.result;
       const img = new Image();
       img.src = imageUrl;
->>>>>>> 5f9acddcee7c022581643149202a07b584a7de48
 
       img.onload = async () => {
         // Create a canvas to resize the image
@@ -114,43 +97,18 @@ const ImageLocationFinder = () => {
         let width = img.width;
         let height = img.height;
 
-<<<<<<< HEAD
-        if (lat && lng && width && height) {
-          const imageDoc = await addDoc(collection(db, 'images'), {
-            imageUrl,
-            width,
-            height
-          });
-
-          const newMarker = { lat, lng, icon: imageDoc.id };
-
-          const updatedData = {
-            ...data,
-            markers: [...data.markers, newMarker]
-          };
-
-          await updateDoc(docRef, updatedData);
-          setMarkers(updatedData.markers);
-=======
         // Resize logic based on max dimensions
         if (width > height) {
           if (width > 1080) {
             height *= (1080 / width);
             width = 1080;
           }
->>>>>>> 5f9acddcee7c022581643149202a07b584a7de48
         } else {
           if (height > 720) {
             width *= (720 / height);
             height = 720;
           }
         }
-<<<<<<< HEAD
-      });
-    }).catch((error) => {
-      console.error("Error uploading image: ", error);
-    });
-=======
 
         // Set canvas dimensions
         canvas.width = width;
@@ -237,7 +195,6 @@ const ImageLocationFinder = () => {
     };
 
     reader.readAsDataURL(file);
->>>>>>> 5f9acddcee7c022581643149202a07b584a7de48
   };
 
 
@@ -261,18 +218,14 @@ const ImageLocationFinder = () => {
   };
 
   const handleMarkerClick = (marker) => {
-    setSelectedImage(marker.imageUrl);
+    setSelectedImage(marker.imageUrl); // Set the image URL from the marker to open it in a modal
   };
 
   const closeModal = () => {
-    setSelectedImage(null);
+    setSelectedImage(null); // Set selectedImage to null to close the modal
   };
-<<<<<<< HEAD
-  
-=======
 
 
->>>>>>> 5f9acddcee7c022581643149202a07b584a7de48
   return (
     <div>
       <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
@@ -287,16 +240,11 @@ const ImageLocationFinder = () => {
                 key={index}
                 position={{ lat: marker.lat, lng: marker.lng }}
                 icon={{
-<<<<<<< HEAD
-                  url: marker.imageUrl,
-                  scaledSize: new window.google.maps.Size(scaledSize.w, scaledSize.h),
-=======
                   url: marker.imageUrl || '', // Ensure this is a valid URL string
                   scaledSize: new window.google.maps.Size(scaledSize.h, scaledSize.w),
->>>>>>> 5f9acddcee7c022581643149202a07b584a7de48
                   anchor: new window.google.maps.Point(scaledSize.w / 2, scaledSize.h / 2),
                 }}
-                onClick={() => handleMarkerClick(marker)}
+                onClick={() => handleMarkerClick(marker)} // Trigger image display on click
               />
 
             );
@@ -310,6 +258,7 @@ const ImageLocationFinder = () => {
         )}
       </LoadScript>
       <input id="files" type="file" accept="image/*" onChange={handleImageChange} style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 1 }} />
+      {/* Loading information */}
       {loading && (
         <div style={loadingStyle}>Loading memories...</div>
       )}
@@ -329,6 +278,7 @@ const loadingStyle = {
   boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
   zIndex: 999,
 };
+
 
 // Styles for the modal
 const modalStyle = {
