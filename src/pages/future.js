@@ -21,12 +21,7 @@ const db = getFirestore(app);
 
 const mapContainerStyle = {
   width: '100%',
-  height: '400px', // Set a fixed height for the map
-};
-
-const center = {
-  lat: 40.712776, // Default latitude
-  lng: -74.005974, // Default longitude
+  height: '400px',
 };
 
 export default function Existing() {
@@ -41,7 +36,8 @@ function GlimpseInputField() {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
-  const [isValid, setIsValid] = useState(false);
+  const [mapData, setMapData] = useState(null);
+  const [markerIcons, setMarkerIcons] = useState([]);
 
   const handleCodeChange = (e) => {
     setCode(e.target.value);
@@ -51,16 +47,44 @@ function GlimpseInputField() {
     setName(e.target.value);
   };
 
+  const fetchMarkerIcons = async () => {
+    const icons = [];
+    try {
+      const q = query(collection(db, 'maps'), where('password', '==', code));
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.icon) {
+          icons.push(data.icon);
+        } else {
+          console.warn("No icon found in document:", doc.id); // Log missing icon
+        }
+      });
+
+      return icons;
+    } catch (error) {
+      console.error("Error fetching marker icons: ", error);
+      setMessage('An error occurred while fetching marker icons.');
+    }
+  };
+
   const handleSubmit = async () => {
     if (code && name) {
       try {
-        // Query the 'maps' collection where the password field matches the provided code
         const q = query(collection(db, 'maps'), where('password', '==', code));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          setIsValid(true);
-          setMessage(`Welcome to ${name}'s possible new memories`);
+          const data = querySnapshot.docs[0].data();
+          console.log("Map Data:", data);
+          setMapData(data);
+
+          // Fetch marker icons after setting map data
+          const icons = await fetchMarkerIcons();
+          setMarkerIcons(icons);
+          
+          setMessage(`Welcome to ${data.name || name}'s possible new memories`);
         } else {
           setMessage('No map found with the provided code.');
         }
@@ -80,7 +104,7 @@ function GlimpseInputField() {
           {message}
         </div>
       )}
-      {!isValid ? (
+      {!mapData ? (
         <>
           <h1 className="text-3xl font-bold mb-6">Create Future Glimpses</h1>
           <input
@@ -107,13 +131,26 @@ function GlimpseInputField() {
           />
         </>
       ) : (
-        <MapComponent />
+        <MapComponent mapData={mapData} markerIcons={markerIcons} />
       )}
     </div>
   );
 }
 
-const MapComponent = () => {
+const MapComponent = ({ mapData, markerIcons }) => {
+  const center = {
+    lat: mapData.lat || 40.712776,
+    lng: mapData.lng || -74.005974,
+  };
+
+  // Prepare data for Google Gemini AI
+  const geminiData = {
+    mapCenter: center,
+    markerIcons: markerIcons,
+  };
+
+  console.log("Data for Gemini AI:", geminiData);
+
   return (
     <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
       <GoogleMap
