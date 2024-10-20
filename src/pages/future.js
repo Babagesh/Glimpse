@@ -29,6 +29,11 @@ function GlimpseInputField() {
 
   return (
     <div className="flex flex-col items-center">
+      {isValid && (
+        <div className="fixed top-4 text-xl font-bold text-blue-600">
+          {message}
+        </div>
+      )}
       {!isValid ? (
         <>
           <h1 className="text-3xl font-bold mb-6">Create Future Glimpses</h1>
@@ -47,9 +52,7 @@ function GlimpseInputField() {
             value="Generate Glimpses"
           />
         </>
-      ) : (
-        <p className="text-center text-gray-700">{message}</p>
-      )}
+      ) : null}
     </div>
   );
 }
