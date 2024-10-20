@@ -39,7 +39,7 @@ const files = [
 
 const FileList = () => {
   return (
-    <div className="file-list">
+    <div className="justify-between flex p-4 flex-row bg-slate-100">
       {files.map((file, index) => (
         <FileCard
           key={index}

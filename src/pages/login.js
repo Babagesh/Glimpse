@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+/*import React, { useEffect } from 'react';
 import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
 
 export default function Login() {
@@ -71,13 +71,11 @@ export default function Login() {
       <button onClick={handleSignIn}>Sign in with Google</button>
     </div>
   );
-}
-
-
-/*import React, { useState, useEffect } from 'react'
+}*/
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Link } from "react-router-dom";
-import { signInWithEmailAndPassword, GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, getAuth} from 'firebase/auth';
 import { auth } from '../database';
 import Data from "../ data"
 
@@ -87,7 +85,6 @@ export default function Login() {
   const [password, setPassword] = useState('')
 
   const navigate = useNavigate()
-  const auth = getAuth();
 
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -95,6 +92,7 @@ export default function Login() {
     await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
+        Data.user = user;
         console.log(user)
         navigate("/glimpses")
       })
@@ -122,7 +120,7 @@ export default function Login() {
         />
         <input
           size={30}
-          type="text"
+          type="password"
           value={password}
           required
           placeholder="Password"
@@ -136,4 +134,4 @@ export default function Login() {
       </div>
     </div>
   );
-}*/
+}
