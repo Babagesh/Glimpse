@@ -38,6 +38,7 @@ const ImageLocationFinder = () => {
   const [imageSize, setImageSize] = useState({ w: 0, h: 0 });
   const [currentZoom, setCurrentZoom] = useState(3);
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(null);
   const location = useLocation();
   const { documentId } = location.state || {};
   const docRef = doc(db, 'maps', documentId);
@@ -147,6 +148,14 @@ const ImageLocationFinder = () => {
     return { w: newWidth, h: newHeight };
   };
 
+  const handleMarkerClick = (marker) => {
+    setSelectedImage(marker.imageUrl); // Set the image URL from the marker to open it in a modal
+  };
+
+  const closeModal = () => {
+    setSelectedImage(null); // Set selectedImage to null to close the modal
+  };
+
   return (
     <div>
       <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
@@ -165,10 +174,17 @@ const ImageLocationFinder = () => {
                   scaledSize: new window.google.maps.Size(scaledSize.w, scaledSize.h),
                   anchor: new window.google.maps.Point(scaledSize.w / 2, scaledSize.h / 2),
                 }}
+                onClick={() => handleMarkerClick(marker)} // Trigger image display on click
               />
             );
           })}
         </GoogleMap>
+        {selectedImage && (
+          <div style={modalStyle}>
+            <img src={selectedImage} alt="Full Screen" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <button onClick={closeModal} style={closeButtonStyle}>Close</button>
+          </div>
+        )}
       </LoadScript>
       <input id="files" type="file" accept="image/*" onChange={handleImageChange} style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 1 }} />
       {/* Loading information */}
