@@ -111,7 +111,7 @@ const ImageLocationFinder = () => {
           })}
         </GoogleMap>
       </LoadScript>
-      <input type="file" accept="image/*" onChange={handleImageChange} style={{ position: 'absolute', top: 10, left: 10, zIndex: 1 }} />
+      <input type="file" accept="image/*" onChange={handleImageChange} style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 1 }} />
       
       {/* Modal for full-screen image display */}
       {selectedImage && (
@@ -140,6 +140,7 @@ const modalStyle = {
 
 const closeButtonStyle = {
   position: 'absolute',
+  backgroundColor: "white",
   top: '20px',
   right: '20px',
   padding: '10px 20px',
