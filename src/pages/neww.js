@@ -31,34 +31,29 @@ const center = {
 const GlimpseForm = () => {
   const [glimpseName, setGlimpseName] = useState('');
   const [glimpsePassword, setGlimpsePassword] = useState('');
-  const [locations, setLocation] = useState(center); // Default center location
 
   const navigate = useNavigate()
   
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, 'maps'), {
+      const docRef = await addDoc(collection(db, 'maps'), {
         name: glimpseName,
         password: glimpsePassword,
-        location: locations
+        location: []
       });
       alert('Data saved successfully!');
       setGlimpseName('');
       setGlimpsePassword('');
-      navigate("/map")
+      navigate("/map", { state: { documentId: docRef.id } });
     } catch (error) {
       console.error('Error adding document: ', error);
     }
   };
 
-  const handleMapClick = (event) => {
-    setLocation([{ lat: event.latLng.lat(), lng: event.latLng.lng() }]);
-  };
-
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center"> 
-      <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-md h-96 w-96"> {/* Increased width */}
+      <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-md h-96 w-96">
         <h1 className="text-2xl font-bold mb-12 text-center">Glimpse Form</h1>
         <form onSubmit={handleSubmit} className="space-y-4 w-full"> {/* Ensured full width for the form */}
           <div>

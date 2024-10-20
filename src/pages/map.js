@@ -1,6 +1,24 @@
 import React, { useState } from 'react';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import EXIF from 'exif-js';
+import { useLocation } from 'react-router-dom';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, updateDoc, doc } from 'firebase/firestore';
+
+// Your Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDRv2sUSBbgsnoJsT1LnUcsE6eFaXXzlDk",
+  authDomain: "glimpses-8bf56.firebaseapp.com",
+  projectId: "glimpses-8bf56",
+  storageBucket: "glimpses-8bf56.appspot.com",
+  messagingSenderId: "90716597482",
+  appId: "1:90716597482:web:94de9cb882f480504e7b93",
+  measurementId: "G-Q00N0G3WRX"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const containerStyle = {
   width: '100vw',
@@ -12,15 +30,19 @@ const defaultCenter = {
   lng: -74.0060
 };
 
-const ZOOM_THRESHOLD = 2; // Maximum zoom level for size adjustment
-const MIN_DIMENSION = 32; // Minimum size for scaling
-const MAX_DIMENSION = 32; // Maximum size for scaling
+const ZOOM_THRESHOLD = 2;
+const MIN_DIMENSION = 32;
+const MAX_DIMENSION = 32;
 
 const ImageLocationFinder = () => {
   const [markers, setMarkers] = useState([]);
   const [imageSize, setImageSize] = useState({ w: 0, h: 0 });
   const [currentZoom, setCurrentZoom] = useState(3);
-  const [selectedImage, setSelectedImage] = useState(null); // State for the selected image
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const location = useLocation();
+  const { documentId } = location.state || {};
+  const docRef = doc(db, 'maps', documentId);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -35,11 +57,23 @@ const ImageLocationFinder = () => {
         const width = EXIF.getTag(this, 'PixelXDimension');
         const height = EXIF.getTag(this, 'PixelYDimension');
 
-        // Convert coordinates to decimal
         const lat = convertDMSToDD(latitude, latRef);
         const lng = convertDMSToDD(longitude, lonRef);
+
         if (lat && lng) {
-          setMarkers((prevMarkers) => [...prevMarkers, { lat, lng, icon: imageUrl }]);
+          const newMarker = { lat, lng, icon: imageUrl };
+          setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+
+          // Update Firestore with the new markers
+          updateDoc(docRef, {
+            markers: [...markers, newMarker] // Ensure this is the correct structure
+          })
+          .then(() => {
+            console.log("Document updated successfully!");
+          })
+          .catch((error) => {
+            console.error("Error updating document: ", error);
+          });
         } else {
           console.error("No EXIF data found or size.");
         }
@@ -62,7 +96,6 @@ const ImageLocationFinder = () => {
 
   const calculateScaledSize = (originalWidth, originalHeight, currentZoom) => {
     const aspectRatio = originalWidth / originalHeight;
-
     let newWidth = originalWidth;
     let newHeight = originalHeight;
 
@@ -77,12 +110,10 @@ const ImageLocationFinder = () => {
     return { w: newWidth, h: newHeight };
   };
 
-  // Function to open the modal
   const handleMarkerClick = (imageUrl) => {
     setSelectedImage(imageUrl);
   };
 
-  // Function to close the modal
   const closeModal = () => {
     setSelectedImage(null);
   };
