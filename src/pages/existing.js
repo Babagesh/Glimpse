@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-import Exif from 'exif-js'; // For reading image EXIF data
+import Exif from 'exif-js';
 import '../App.css';
 
 const mapContainerStyle = {
   width: '100%',
-  height: '300px',
+  height: '100vh', // Make map full height after validation
 };
 
 const center = {
@@ -16,7 +16,6 @@ const center = {
 export default function Existing() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-2xl font-bold mb-8">Please enter a map code to contribute to!</h1>
       <GlimpseInputField />
     </div>
   );
@@ -51,7 +50,7 @@ function GlimpseInputField() {
   };
 
   const getLocationFromImage = (file) => {
-    Exif.getData(file, function() {
+    Exif.getData(file, function () {
       const lat = Exif.getTag(this, "GPSLatitude");
       const lng = Exif.getTag(this, "GPSLongitude");
       if (lat && lng) {
@@ -71,9 +70,10 @@ function GlimpseInputField() {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center w-full h-full">
       {!showMap ? (
         <>
+          <h1 className="text-2xl font-bold mb-8">Please enter a map code to contribute to!</h1>
           <input
             type="text"
             size={30}
@@ -93,17 +93,6 @@ function GlimpseInputField() {
       ) : (
         <>
           <MapComponent location={location} image={image} />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="mt-4 mb-4 w-80 text-sm text-gray-500
-                       file:mr-4 file:py-2 file:px-4
-                       file:rounded-l-lg file:border-0
-                       file:text-sm file:font-semibold
-                       file:bg-slate-800 file:text-white
-                       hover:file:bg-slate-700 transition"
-          />
         </>
       )}
     </div>
@@ -112,7 +101,7 @@ function GlimpseInputField() {
 
 const MapComponent = ({ location, image }) => {
   return (
-    <div className="mt-10 w-full h-full max-w-7xl mx-auto">
+    <div className="w-full h-full">
       <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs"> {/* Replace with your API key */}
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
