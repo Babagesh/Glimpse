@@ -62,7 +62,7 @@ const ImageLocationFinder = () => {
     };
 
     fetchMarkers();
-  }, []);
+  }, [docRef]);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files); // Convert FileList to array
@@ -83,8 +83,8 @@ const ImageLocationFinder = () => {
           const lat = convertDMSToDD(latitude, latRef);
           const lng = convertDMSToDD(longitude, lonRef);
 
-          if (lat && lng) {
-            newMarkers.push({ lat, lng, icon: imageUrl, width, height }); // Store width and height
+          if (lat && lng && width && height) {
+            newMarkers.push({ lat, lng, icon: imageUrl, width: Number(width), height: Number(height) }); // Ensure width and height are numbers
           }
 
           // Once all files are processed, update the markers in Firestore
