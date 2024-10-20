@@ -1,12 +1,85 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react';
+import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
+
+export default function Login() {
+  useEffect(() => {
+    // Load the Google API script if not already loaded
+    const loadGapi = () => {
+      if (!window.gapi) {
+        const script = document.createElement('script');
+        script.src = 'https://apis.google.com/js/api.js';
+        script.onload = () => {
+          window.gapi.load('auth', () => {
+            window.gapi.load('picker');
+          });
+        };
+        document.body.appendChild(script);
+      } else {
+        window.gapi.load('auth', () => {
+          window.gapi.load('picker');
+        });
+      }
+    };
+
+    loadGapi();
+  }, []);
+
+  const handleSignIn = async () => {
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+
+      // Manually call the Picker creation
+      createPicker(token);
+    } catch (error) {
+      console.error('Sign-in failed:', error);
+    }
+  };
+
+  const createPicker = (accessToken) => {
+    if (!window.google || !window.google.picker) {
+      console.error('Google Picker API is not loaded');
+      return;
+    }
+
+    const picker = new window.google.picker.PickerBuilder()
+      .addView(window.google.picker.ViewId.PHOTOS)
+      .setOAuthToken(accessToken)
+      .setDeveloperKey('AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs') // Replace with your Developer Key
+      .setCallback(pickerCallback)
+      .build();
+    picker.setVisible(true);
+  };
+
+  const pickerCallback = (data) => {
+    if (data[window.google.picker.Response.ACTION] === window.google.picker.Action.PICKED) {
+      const doc = data[window.google.picker.Response.DOCUMENTS][0];
+      const id = doc[window.google.picker.Document.ID];
+      const url = doc[window.google.picker.Document.URL];
+      console.log('Selected photo ID:', id);
+      console.log('Selected photo URL:', url);
+    }
+  };
+
+  return (
+    <div>
+      <h1>Google Photos Picker</h1>
+      <button onClick={handleSignIn}>Sign in with Google</button>
+    </div>
+  );
+}
+
+
+/*import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Link } from "react-router-dom";
 import { signInWithEmailAndPassword, GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
 import { auth } from '../database';
 import Data from "../ data"
-
-const provider = new GoogleAuthProvider();
-provider.addScope("https://www.googleapis.com/auth/drive.photos.readonly")
 
 export default function Login() {
   //Handle Error Eventually
@@ -16,34 +89,7 @@ export default function Login() {
   const navigate = useNavigate()
   const auth = getAuth();
 
-  const onSubmit = () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        const user = result.user;
-        Data.credential = credential;
-        Data.token = token;
-        Data.user = user;
-        navigate("/glimpses")
-      }).catch((error) => {
-        Data.credential, Data.token, Data.user = null;
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        const email = error.customData.email;
-        const credential = GoogleAuthProvider.credentialFromError(error);
-      });
-  }
-
-  return (
-    <div>
-      <div className="mt-8">
-        <input type="button" className="w-full text-lg shadow-xl py-2 px-10 text-sm tracking-wide rounded-lg text-white bg-slate-800" onClick={onSubmit} value={'Log in'} />
-      </div>
-    </div>
-  )
-
-  /*const onSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault()
 
     await signInWithEmailAndPassword(auth, email, password)
@@ -89,5 +135,5 @@ export default function Login() {
         <Link to="/signup" className="mt-4 text-sky-600 text-md">Sign Up</Link>
       </div>
     </div>
-  );*/
-}
+  );
+}*/

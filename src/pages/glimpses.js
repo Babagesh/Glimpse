@@ -54,7 +54,7 @@ const FileCard = ({title}) => {
   const navigate = useNavigate();
   return (
     <div className="file-card">
-      <button onClick={() => navigate("/map")} class="text-gray-800 text-center font-[sans-serif] font-bold">{title}</button>
+      <button onClick={() => navigate("/map")} className="text-gray-800 text-center font-[sans-serif] font-bold">{title}</button>
     </div>
   );
 };
