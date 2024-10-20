@@ -11,19 +11,24 @@ export default function Existing() {
 
 function GlimpseInputField() {
   const [code, setCode] = useState('');
+  const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [isValid, setIsValid] = useState(false);
 
-  const handleChange = (e) => {
+  const handleCodeChange = (e) => {
     setCode(e.target.value);
   };
 
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+  };
+
   const handleSubmit = () => {
-    if (code) {
+    if (code && name) {
       setIsValid(true);
-      setMessage('Welcome to your possible new memories!');
+      setMessage(`Welcome to your possible new memories, ${name}!`);
     } else {
-      setMessage('Please enter a valid code.');
+      setMessage('Please enter a valid code and name.');
     }
   };
 
@@ -40,9 +45,17 @@ function GlimpseInputField() {
           <input
             type="text"
             size={30}
+            placeholder="Enter Glimpse name"
+            value={name}
+            onChange={handleNameChange}
+            className="mb-4 w-80 h-12 border-b-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-500 transition"
+          />
+          <input
+            type="text"
+            size={30}
             placeholder="Enter Glimpse code"
             value={code}
-            onChange={handleChange}
+            onChange={handleCodeChange}
             className="mb-4 w-80 h-12 border-b-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-500 transition"
           />
           <input
