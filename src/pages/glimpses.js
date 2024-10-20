@@ -19,7 +19,7 @@ const Taskbar = () => {
         <button onClick={() => navigate("/existing")}>Contribute To Glimpse</button>
         </div>
       <div className="taskbar-option">
-        <button onClick={() => navigate("/new")}>New Glimpse</button>
+        <button onClick={() => navigate("/neww")}>New Glimpse</button>
         </div>
     </div>
   );
