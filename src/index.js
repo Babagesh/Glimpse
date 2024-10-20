@@ -41,7 +41,7 @@ const router = createBrowserRouter([
     element: <Existing />
   },
   {
-    path: "/new",
+    path: "/neww",
     element: <New />
   },
 ]);

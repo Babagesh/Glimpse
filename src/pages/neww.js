@@ -20,7 +20,7 @@ const GlimpseForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    /*try {
+    try {
       await addDoc(collection(db, 'glimpses'), {
         name: glimpseName,
         password: glimpsePassword,
@@ -31,7 +31,7 @@ const GlimpseForm = () => {
       setGlimpsePassword('');
     } catch (error) {
       console.error('Error adding document: ', error);
-    }*/
+    }
   };
 
   const handleMapClick = (event) => {

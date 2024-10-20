@@ -1,7 +1,6 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
-import 'firebase/firestore';
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDRv2sUSBbgsnoJsT1LnUcsE6eFaXXzlDk",
@@ -19,11 +18,12 @@ const firebaseConfig = {
     firebase.app();
 }*/
 
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.getFirestore(app);
-export const auth = firebase.auth();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+export const auth = getAuth(app);
 export default app;
 
+/*
 export function addDocument(collection, data) {
     return new Promise((Resolve, Reject) => {
         db.collection(collection).add(data).then((data) => {
@@ -110,7 +110,7 @@ export function useCollection2(collection, orderBy) {
     }, [collection, orderBy])
 
     return { loading, data }
-}*/
+}
 
 export function useCollection(collection, orderBy, order) {
     return new Promise((Resolve) => {
@@ -139,4 +139,4 @@ export function getFromRef(ref) {
             Resolve(snap.data());
         })
     })
-}
+}*/
