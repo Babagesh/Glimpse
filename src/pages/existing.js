@@ -120,7 +120,7 @@ const MapComponent = ({ location, image }) => {
           zoom={10}
         >
           {location && (
-            <Marker 
+            <Marker
               position={location}
               icon={{
                 url: image,
