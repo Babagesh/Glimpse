@@ -30,6 +30,15 @@ const Taskbar = () => {
         >
           New Glimpse
         </button>
+        
+      </div>
+      <div className="taskbar-option">
+        <button
+          onClick={() => navigate("/future")}
+          className="text-white font-semibold hover:bg-blue-600 rounded-md px-4 py-2 transition"
+        >
+          Future Glimpse
+        </button>
       </div>
     </div>
   );

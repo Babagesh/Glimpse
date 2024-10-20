@@ -13,6 +13,7 @@ import Glimpses from "./pages/glimpses"
 import Map from "./pages/map"
 import Existing from "./pages/existing"
 import New from "./pages/neww"
+import Future from "./pages/future"
 import './App.css';
 
 const router = createBrowserRouter([
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
     path: "/neww",
     element: <New />
   },
+  {
+    path: "future",
+    element: <Future />
+  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
