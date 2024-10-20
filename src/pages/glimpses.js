@@ -66,7 +66,7 @@ const Taskbar = () => {
 
 const FileList = () => {
   const [files, setFiles] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -96,28 +96,29 @@ const FileList = () => {
   }, []);
 
   return (
-    <div className="flex flex-col justify-start p-4 rounded-md shadow-md flex-grow overflow-auto"> {/* Adjusted for layout */}
+    <div className="flex flex-grow p-4 overflow-auto">
       {loading ? (
-        <div className="flex justify-center items-center w-full h-full"> {/* Center loading indicator */}
+        <div className="flex justify-center items-center w-full h-full">
           <p className="text-gray-500">Loading...</p>
         </div>
-      ) : files.length === 0 ? ( // Check if there are no file cards
-        <div className="flex justify-center items-center h-full"> {/* Center the message */}
+      ) : files.length === 0 ? (
+        <div className="flex justify-center items-center w-full h-full">
           <p className="text-gray-500 text-xl font-semibold">Create a Glimpse</p>
         </div>
       ) : (
-        files.map((file) => (
-          <FileCard
-            key={file.id}
-            title={file.name || "No Title"}
-            id={file.id}
-          />
-        ))
+        <div className="flex flex-wrap justify-around w-full">
+          {files.map((file) => (
+            <FileCard
+              key={file.id}
+              title={file.name || "No Title"}
+              id={file.id}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
 };
-
 
 
 const FileCard = ({ title, id }) => {
