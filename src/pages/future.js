@@ -4,7 +4,6 @@ import '../App.css';
 export default function Existing() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6">Create Future Glimpses</h1>
       <GlimpseInputField />
     </div>
   );
@@ -30,8 +29,9 @@ function GlimpseInputField() {
 
   return (
     <div className="flex flex-col items-center">
-      {!isValid && (
+      {!isValid ? (
         <>
+          <h1 className="text-3xl font-bold mb-6">Create Future Glimpses</h1>
           <input
             type="text"
             size={30}
@@ -47,8 +47,9 @@ function GlimpseInputField() {
             value="Generate Glimpses"
           />
         </>
+      ) : (
+        <p className="text-center text-gray-700">{message}</p>
       )}
-      {message && <p className="text-center text-gray-700">{message}</p>}
     </div>
   );
 }
