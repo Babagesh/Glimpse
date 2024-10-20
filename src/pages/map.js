@@ -4,6 +4,7 @@ import EXIF from 'exif-js';
 import { useLocation } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import { collection, getFirestore, updateDoc, doc, getDoc, addDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Import these
 
 // Firebase configuration
 const firebaseConfig = {
@@ -19,6 +20,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app); // Initialize storage
 
 const containerStyle = {
   width: '100vw',
@@ -35,7 +37,6 @@ const MIN_DIMENSION = 32;
 
 const ImageLocationFinder = () => {
   const [markers, setMarkers] = useState([]);
-  const [imageSize, setImageSize] = useState({ w: 0, h: 0 });
   const [currentZoom, setCurrentZoom] = useState(3);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -81,54 +82,122 @@ const ImageLocationFinder = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
+
     reader.onload = async (event) => {
       const imageUrl = event.target.result;
-      const docSnapshot = await getDoc(docRef);
-      const data = docSnapshot.exists() ? docSnapshot.data() : { markers: [], name: '', password: '' };
+      const img = new Image();
+      img.src = imageUrl;
 
-      data.markers = Array.isArray(data.markers) ? data.markers : [];
+      img.onload = async () => {
+        // Create a canvas to resize the image
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
 
-      EXIF.getData(file, async function () {
-        const latitude = EXIF.getTag(this, 'GPSLatitude');
-        const longitude = EXIF.getTag(this, 'GPSLongitude');
-        const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
-        const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
-        const width = EXIF.getTag(this, 'PixelXDimension');
-        const height = EXIF.getTag(this, 'PixelYDimension');
-        const lat = convertDMSToDD(latitude, latRef);
-        const lng = convertDMSToDD(longitude, lonRef);
+        // Calculate new dimensions while maintaining aspect ratio
+        let width = img.width;
+        let height = img.height;
 
-        if (lat && lng && width && height) {
-          // Save imageUrl, width, and height as fields in Firestore under the "images" collection
-          const imageDoc = await addDoc(collection(db, 'images'), {
-            imageUrl,
-            width,
-            height
-          });
-
-          // Store the document reference as the marker's icon
-          const newMarker = { lat, lng, icon: imageDoc.id };
-
-          // Update Firestore with the new marker data
-          const updatedData = {
-            ...data,
-            markers: [...data.markers, newMarker]
-          };
-
-          updateDoc(docRef, updatedData)
-            .then(() => {
-              setMarkers(updatedData.markers);
-            })
-            .catch((error) => {
-              console.error("Error updating document: ", error);
-            });
+        // Resize logic based on max dimensions
+        if (width > height) {
+          if (width > 1080) {
+            height *= (1080 / width);
+            width = 1080;
+          }
         } else {
-          console.error("No EXIF data found for latitude, longitude, or size.");
+          if (height > 720) {
+            width *= (720 / height);
+            height = 720;
+          }
         }
-      });
+
+        // Set canvas dimensions
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw the resized image to the canvas
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Get the compressed image data URL
+        const compressedImageUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+        // Log the compressed image URL to check if it’s valid
+        console.log("Compressed Image URL:", compressedImageUrl);
+
+        // Check if compressedImageUrl is a string before creating a Blob
+        if (typeof compressedImageUrl !== 'string') {
+          console.error("Compressed image URL is not a valid string.");
+          return;
+        }
+
+        // Create a Blob from the compressed data URL
+        const blob = await (await fetch(compressedImageUrl)).blob();
+
+        // Create a storage reference
+        const storageRef = ref(storage, `images/${file.name}`);
+
+        // Upload the image to Cloud Storage
+        uploadBytes(storageRef, blob).then(async (snapshot) => {
+          // Get the download URL
+          const downloadURL = await getDownloadURL(snapshot.ref);
+
+          // Now proceed to save `downloadURL` in Firestore
+          const docSnapshot = await getDoc(docRef);
+          const data = docSnapshot.exists() ? docSnapshot.data() : { markers: [], name: '', password: '' };
+
+          data.markers = Array.isArray(data.markers) ? data.markers : [];
+
+          EXIF.getData(file, async function () {
+            const latitude = EXIF.getTag(this, 'GPSLatitude');
+            const longitude = EXIF.getTag(this, 'GPSLongitude');
+            const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
+            const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
+            const width = EXIF.getTag(this, 'PixelXDimension');
+            const height = EXIF.getTag(this, 'PixelYDimension');
+            const lat = convertDMSToDD(latitude, latRef);
+            const lng = convertDMSToDD(longitude, lonRef);
+
+            if (lat && lng && width && height) {
+              // Save downloadURL, width, and height as fields in Firestore under the "images" collection
+              const imageDoc = await addDoc(collection(db, 'images'), {
+                imageUrl: downloadURL, // Save the download URL here
+                width,
+                height
+              });
+
+              // Store the document reference as the marker's icon
+              const newMarker = { lat, lng, icon: imageDoc.id };
+
+              // Update Firestore with the new marker data
+              const updatedData = {
+                ...data,
+                markers: [...data.markers, newMarker]
+              };
+
+              updateDoc(docRef, updatedData)
+                .then(() => {
+                  setMarkers(updatedData.markers);
+                })
+                .catch((error) => {
+                  console.error("Error updating document: ", error);
+                });
+            } else {
+              console.error("No EXIF data found for latitude, longitude, or size.");
+            }
+          });
+        }).catch((error) => {
+          console.error("Error uploading image: ", error);
+        });
+      };
+
+      img.onerror = () => {
+        console.error("Error loading image.");
+      };
     };
+
     reader.readAsDataURL(file);
   };
+
+
 
   const convertDMSToDD = (dms, ref) => {
     if (!dms) return null;
@@ -151,11 +220,11 @@ const ImageLocationFinder = () => {
   const handleMarkerClick = (marker) => {
     setSelectedImage(marker.imageUrl); // Set the image URL from the marker to open it in a modal
   };
-  
+
   const closeModal = () => {
     setSelectedImage(null); // Set selectedImage to null to close the modal
   };
-  
+
 
   return (
     <div>
@@ -171,12 +240,13 @@ const ImageLocationFinder = () => {
                 key={index}
                 position={{ lat: marker.lat, lng: marker.lng }}
                 icon={{
-                  url: marker.imageUrl, // Use preloaded image URL
-                  scaledSize: new window.google.maps.Size(scaledSize.w, scaledSize.h),
+                  url: marker.imageUrl || '', // Ensure this is a valid URL string
+                  scaledSize: new window.google.maps.Size(scaledSize.h, scaledSize.w),
                   anchor: new window.google.maps.Point(scaledSize.w / 2, scaledSize.h / 2),
                 }}
                 onClick={() => handleMarkerClick(marker)} // Trigger image display on click
               />
+
             );
           })}
         </GoogleMap>
