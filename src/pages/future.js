@@ -24,11 +24,6 @@ const mapContainerStyle = {
   height: '400px',
 };
 
-const center = {
-  lat: 40.712776,
-  lng: -74.005974,
-};
-
 export default function Existing() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
@@ -41,8 +36,7 @@ function GlimpseInputField() {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
-  const [isValid, setIsValid] = useState(false);
-  const [imageUrls, setImageUrls] = useState([]);
+  const [mapData, setMapData] = useState(null);
 
   const handleCodeChange = (e) => {
     setCode(e.target.value);
@@ -75,14 +69,15 @@ function GlimpseInputField() {
   const handleSubmit = async () => {
     if (code && name) {
       try {
+        // Querying the 'maps' collection using the password field
         const q = query(collection(db, 'maps'), where('password', '==', code));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          const urls = await fetchImages();
-          setImageUrls(urls);
-          setIsValid(true);
-          setMessage(`Welcome to ${name}'s possible new memories`);
+          const data = querySnapshot.docs[0].data(); // Get the first matching map document
+          console.log("Map Data:", data); // Debugging log
+          setMapData(data); // Set the map data
+          setMessage(`Welcome to ${data.name || name}'s possible new memories`);
         } else {
           setMessage('No map found with the provided code.');
         }
@@ -102,7 +97,7 @@ function GlimpseInputField() {
           {message}
         </div>
       )}
-      {!isValid ? (
+      {!mapData ? (
         <>
           <h1 className="text-3xl font-bold mb-6">Create Future Glimpses</h1>
           <input
@@ -129,22 +124,18 @@ function GlimpseInputField() {
           />
         </>
       ) : (
-        <>
-          <MapComponent />
-          {imageUrls.length > 0 && (
-            <div className="image-gallery mt-4">
-              {imageUrls.map((url, index) => (
-                <img key={index} src={url} alt={`Glimpse ${index}`} className="w-32 h-32 object-cover m-2" />
-              ))}
-            </div>
-          )}
-        </>
+        <MapComponent mapData={mapData} />
       )}
     </div>
   );
 }
 
-const MapComponent = () => {
+const MapComponent = ({ mapData }) => {
+  const center = {
+    lat: mapData.lat || 40.712776, // Use lat from mapData or default
+    lng: mapData.lng || -74.005974, // Use lng from mapData or default
+  };
+
   return (
     <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
       <GoogleMap
