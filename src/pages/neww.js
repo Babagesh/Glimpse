@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { addDocument } from '../database';
 
 // Your Firebase configuration
 const firebaseConfig = {
