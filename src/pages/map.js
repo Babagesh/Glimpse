@@ -72,7 +72,7 @@ const ImageLocationFinder = () => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
 
-      reader.onload = async (event) => {
+      reader.onload = (event) => {
         const imageUrl = event.target.result;
         EXIF.getData(file, function () {
           const latitude = EXIF.getTag(this, 'GPSLatitude');
@@ -87,107 +87,98 @@ const ImageLocationFinder = () => {
 
           if (lat && lng && width && height) {
             newMarkers.push({ lat, lng, icon: imageUrl, width: Number(width), height: Number(height) });
+
+            // If all files have been processed, update Firestore
+            if (newMarkers.length === files.length) {
+              const updatedMarkers = [...markers, ...newMarkers];
+              updateDoc(docRef, { markers: updatedMarkers })
+                .then(() => {
+                  setMarkers(updatedMarkers);
+                })
+                .catch((error) => {
+                  console.error("Error updating document: ", error);
+                });
+            }
           }
         });
       };
     }
-
-    // Wait for all markers to be processed
-    await new Promise((resolve) => {
-      const interval = setInterval(() => {
-        if (newMarkers.length === files.length) {
-          clearInterval(interval);
-          resolve();
-        }
-      }, 100);
-    });
-
-    // Update Firestore with new markers
-    if (newMarkers.length > 0) {
-      try {
-        const updatedMarkers = [...markers, ...newMarkers];
-        await updateDoc(docRef, { markers: updatedMarkers });
-        setMarkers(updatedMarkers);
-      } catch (error) {
-        console.error("Error updating document: ", error);
-      }
-    }
   };
 
-  const convertDMSToDD = (dms, ref) => {
-    if (!dms) return null;
-    const degrees = dms[0] + dms[1] / 60 + dms[2] / 3600;
-    return (ref === 'S' || ref === 'W') ? -degrees : degrees;
-  };
+const convertDMSToDD = (dms, ref) => {
+  if (!dms) return null;
+  const degrees = dms[0] + dms[1] / 60 + dms[2] / 3600;
+  return (ref === 'S' || ref === 'W') ? -degrees : degrees;
+};
 
-  const calculateScaledSize = (originalWidth, originalHeight, currentZoom) => {
-    let newWidth = originalWidth;
-    let newHeight = originalHeight;
+const calculateScaledSize = (originalWidth, originalHeight, currentZoom) => {
+  let newWidth = originalWidth;
+  let newHeight = originalHeight;
 
-    if (currentZoom < 2) {
-      newWidth = Math.max(MIN_DIMENSION, originalWidth);
-      newHeight = (newWidth * originalHeight) / originalWidth; 
-    } else {
-      newWidth = Math.min(MAX_DIMENSION, originalWidth);
-      newHeight = newWidth * (originalHeight / originalWidth);
-    }
+  if (currentZoom < 2) {
+    newWidth = Math.max(MIN_DIMENSION, originalWidth);
+    newHeight = (newWidth * originalHeight) / originalWidth;
+  } else {
+    newWidth = Math.min(MAX_DIMENSION, originalWidth);
+    newHeight = newWidth * (originalHeight / originalWidth);
+  }
 
-    return { w: Math.round(newWidth), h: Math.round(newHeight) };
-  };
+  return { w: Math.round(newWidth), h: Math.round(newHeight) };
+};
 
-  const handleMarkerClick = (imageUrl) => {
-    setSelectedImage(imageUrl);
-  };
+const handleMarkerClick = (imageUrl) => {
+  setSelectedImage(imageUrl);
+};
 
-  const closeModal = () => {
-    setSelectedImage(null);
-  };
+const closeModal = () => {
+  setSelectedImage(null);
+};
 
-  return (
-    <div>
-      <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={defaultCenter}
-          zoom={currentZoom}>
-          {markers.map((marker, index) => {
-            const scaledSize = calculateScaledSize(marker.width || MIN_DIMENSION, marker.height || MIN_DIMENSION, currentZoom);
-            return (
-              <Marker
-                key={index}
-                position={{ lat: marker.lat, lng: marker.lng }}
-                icon={{
-                  url: marker.icon,
-                  scaledSize: new window.google.maps.Size(scaledSize.w, scaledSize.h),
-                  anchor: new window.google.maps.Point(scaledSize.w / 2, scaledSize.h / 2),
-                }}
-                onClick={() => handleMarkerClick(marker.icon)}
-              />
-            );
-          })}
-        </GoogleMap>
-      </LoadScript>
-      <input
-        id="files"
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        multiple
-        style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 1 }}
-      />
-      
-      {loading && (
-        <div style={loadingStyle}>Loading memories...</div>
-      )}
+return (
+  <div>
+    <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={defaultCenter}
+        zoom={currentZoom}>
+        {markers.map((marker, index) => {
+          const scaledSize = calculateScaledSize(marker.width || MIN_DIMENSION, marker.height || MIN_DIMENSION, currentZoom);
+          return (
+            <Marker
+              key={index}
+              position={{ lat: marker.lat, lng: marker.lng }}
+              icon={{
+                url: marker.icon,
+                scaledSize: new window.google.maps.Size(scaledSize.w, scaledSize.h),
+                anchor: new window.google.maps.Point(scaledSize.w / 2, scaledSize.h / 2),
+              }}
+              onClick={() => handleMarkerClick(marker.icon)}
+            />
+          );
+        })}
+      </GoogleMap>
+    </LoadScript>
+    <input
+      id="files"
+      type="file"
+      accept="image/*"
+      onChange={handleImageChange}
+      multiple
+      style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 1 }}
+    />
 
-      {selectedImage && (
-        <div style={modalStyle}>
-          <img src={selectedImage} alt="Full Screen" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-          <button onClick={closeModal} style={closeButtonStyle}>Close</button>
-        </div>
-      )}
-    </div>
-  );
+    {loading && (
+      <div style={loadingStyle}>Loading memories...</div>
+    )}
+
+    {selectedImage && (
+      <div style={modalStyle}>
+        <img src={selectedImage} alt="Full Screen" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <button onClick={closeModal} style={closeButtonStyle}>Close</button>
+      </div>
+    )}
+  </div>
+);
 };
 
 // Styles for loading message
