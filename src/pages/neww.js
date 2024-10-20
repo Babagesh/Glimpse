@@ -1,23 +1,7 @@
 import React, { useState } from 'react';
-import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-import 'firebase/firestore';
-
-// Your Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDRv2sUSBbgsnoJsT1LnUcsE6eFaXXzlDk",
-  authDomain: "glimpses-8bf56.firebaseapp.com",
-  projectId: "glimpses-8bf56",
-  storageBucket: "glimpses-8bf56.appspot.com",
-  messagingSenderId: "90716597482",
-  appId: "1:90716597482:web:94de9cb882f480504e7b93",
-  measurementId: "G-Q00N0G3WRX"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import db  from '../database';
 
 const mapContainerStyle = {
   height: "400px",
@@ -36,7 +20,7 @@ const GlimpseForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
+    /*try {
       await addDoc(collection(db, 'glimpses'), {
         name: glimpseName,
         password: glimpsePassword,
@@ -47,7 +31,7 @@ const GlimpseForm = () => {
       setGlimpsePassword('');
     } catch (error) {
       console.error('Error adding document: ', error);
-    }
+    }*/
   };
 
   const handleMapClick = (event) => {

@@ -72,10 +72,10 @@ export default function Login() {
     </div>
   );
 }*/
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Link } from "react-router-dom";
-import { signInWithEmailAndPassword, getAuth} from 'firebase/auth';
+import { signInWithEmailAndPassword} from 'firebase/auth';
 import { auth } from '../database';
 import Data from "../ data"
 
