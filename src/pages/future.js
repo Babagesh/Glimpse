@@ -21,12 +21,12 @@ const db = getFirestore(app);
 
 const mapContainerStyle = {
   width: '100%',
-  height: '400px', // Set a fixed height for the map
+  height: '400px',
 };
 
 const center = {
-  lat: 40.712776, // Default latitude
-  lng: -74.005974, // Default longitude
+  lat: 40.712776,
+  lng: -74.005974,
 };
 
 export default function Existing() {
@@ -42,6 +42,7 @@ function GlimpseInputField() {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [isValid, setIsValid] = useState(false);
+  const [imageUrls, setImageUrls] = useState([]);
 
   const handleCodeChange = (e) => {
     setCode(e.target.value);
@@ -51,14 +52,35 @@ function GlimpseInputField() {
     setName(e.target.value);
   };
 
+  const fetchImages = async () => {
+    const urls = [];
+    try {
+      const q = query(collection(db, 'maps'), where('password', '==', code));
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.icon) {
+          urls.push(data.icon);
+        }
+      });
+
+      return urls;
+    } catch (error) {
+      console.error("Error fetching images: ", error);
+      setMessage('An error occurred while fetching images.');
+    }
+  };
+
   const handleSubmit = async () => {
     if (code && name) {
       try {
-        // Query the 'maps' collection where the password field matches the provided code
         const q = query(collection(db, 'maps'), where('password', '==', code));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
+          const urls = await fetchImages();
+          setImageUrls(urls);
           setIsValid(true);
           setMessage(`Welcome to ${name}'s possible new memories`);
         } else {
@@ -107,7 +129,16 @@ function GlimpseInputField() {
           />
         </>
       ) : (
-        <MapComponent />
+        <>
+          <MapComponent />
+          {imageUrls.length > 0 && (
+            <div className="image-gallery mt-4">
+              {imageUrls.map((url, index) => (
+                <img key={index} src={url} alt={`Glimpse ${index}`} className="w-32 h-32 object-cover m-2" />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
