@@ -151,7 +151,7 @@ const ImageLocationFinder = () => {
 
                         // Update Firestore with the new markers
                         await updateDoc(docRef, { markers: updatedMarkers });
-
+                        window.location.reload();
                         // Optionally, you could refetch markers to ensure the latest data
                         // fetchMarkers();
                     } else {
@@ -295,3 +295,4 @@ const closeButtonStyle = {
 };
 
 export default ImageLocationFinder;
+
