@@ -18,16 +18,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const mapContainerStyle = {
-  height: "400px",
-  width: "100%"
-};
-
-const center = {
-  lat: 0,
-  lng: 0
-};
-
 const GlimpseForm = () => {
   const [glimpseName, setGlimpseName] = useState('');
   const [glimpsePassword, setGlimpsePassword] = useState('');
