@@ -26,7 +26,7 @@ function GlimpseInputField() {
   const handleSubmit = () => {
     if (code && name) {
       setIsValid(true);
-      setMessage(`Welcome to your possible new memories, ${name}!`);
+      setMessage(`Welcome to ${name}'s possible new memories`);
     } else {
       setMessage('Please enter a valid code and name.');
     }
