@@ -111,7 +111,8 @@ const ImageLocationFinder = () => {
           })}
         </GoogleMap>
       </LoadScript>
-      <input type="file" accept="image/*" onChange={handleImageChange} style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 1 }} />
+      <label for="files" class="btn">Add Image</label>
+      <input id="files" type="file" accept="image/*" onChange={handleImageChange} text="Add File" style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 1 }} />
       
       {/* Modal for full-screen image display */}
       {selectedImage && (
