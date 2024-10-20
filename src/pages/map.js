@@ -52,6 +52,7 @@ const ImageLocationFinder = () => {
           const data = docSnapshot.data();
           if (data.markers) {
             setMarkers(data.markers);
+            console.log("Fetched markers:", data.markers); // Debugging log
           }
         }
       } catch (error) {
@@ -64,47 +65,47 @@ const ImageLocationFinder = () => {
     fetchMarkers();
   }, [docRef]);
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files); // Convert FileList to array
+  const handleImageChange = async (e) => {
+    const files = Array.from(e.target.files);
     const newMarkers = [];
 
     const processFile = (file) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageUrl = event.target.result;
-        EXIF.getData(file, function () {
-          const latitude = EXIF.getTag(this, 'GPSLatitude');
-          const longitude = EXIF.getTag(this, 'GPSLongitude');
-          const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
-          const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
-          const width = EXIF.getTag(this, 'PixelXDimension');
-          const height = EXIF.getTag(this, 'PixelYDimension');
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const imageUrl = event.target.result;
+          EXIF.getData(file, function () {
+            const latitude = EXIF.getTag(this, 'GPSLatitude');
+            const longitude = EXIF.getTag(this, 'GPSLongitude');
+            const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
+            const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
+            const width = EXIF.getTag(this, 'PixelXDimension');
+            const height = EXIF.getTag(this, 'PixelYDimension');
 
-          const lat = convertDMSToDD(latitude, latRef);
-          const lng = convertDMSToDD(longitude, lonRef);
+            const lat = convertDMSToDD(latitude, latRef);
+            const lng = convertDMSToDD(longitude, lonRef);
 
-          if (lat && lng && width && height) {
-            newMarkers.push({ lat, lng, icon: imageUrl, width: Number(width), height: Number(height) }); // Ensure width and height are numbers
-          }
+            if (lat && lng && width && height) {
+              newMarkers.push({ lat, lng, icon: imageUrl, width: Number(width), height: Number(height) });
+              console.log("New marker added:", { lat, lng, icon: imageUrl }); // Debugging log
+            }
 
-          // Once all files are processed, update the markers in Firestore
-          if (newMarkers.length === files.length) {
-            updateDoc(docRef, {
-              markers: [...markers, ...newMarkers]
-            })
-              .then(() => {
-                setMarkers((prevMarkers) => [...prevMarkers, ...newMarkers]);
-              })
-              .catch((error) => {
-                console.error("Error updating document: ", error);
-              });
-          }
-        });
-      };
-      reader.readAsDataURL(file);
+            resolve(); // Resolve the promise when done
+          });
+        };
+        reader.readAsDataURL(file);
+      });
     };
 
-    files.forEach(processFile); // Process each file
+    await Promise.all(files.map(processFile));
+
+    // Update Firestore with new markers
+    const updatedMarkers = [...markers, ...newMarkers];
+    await updateDoc(docRef, {
+      markers: updatedMarkers
+    });
+    setMarkers(updatedMarkers);
+    console.log("Updated markers in Firestore:", updatedMarkers); // Debugging log
   };
 
   const convertDMSToDD = (dms, ref) => {
@@ -117,10 +118,9 @@ const ImageLocationFinder = () => {
     let newWidth = originalWidth;
     let newHeight = originalHeight;
 
-    // Scale based on zoom level
     if (currentZoom < 2) {
       newWidth = Math.max(MIN_DIMENSION, originalWidth);
-      newHeight = (newWidth * originalHeight) / originalWidth; // Maintain aspect ratio
+      newHeight = (newWidth * originalHeight) / originalWidth; 
     } else {
       const scaleFactor = (MAX_DIMENSION / originalWidth);
       newWidth = Math.min(MAX_DIMENSION, originalWidth);
@@ -167,7 +167,7 @@ const ImageLocationFinder = () => {
         type="file"
         accept="image/*"
         onChange={handleImageChange}
-        multiple // Allow multiple file selection
+        multiple
         style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 1 }}
       />
       
