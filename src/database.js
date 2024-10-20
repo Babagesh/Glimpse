@@ -25,6 +25,7 @@ export default app;
 
 export function addDocument(collection, data) {
     return new Promise((Resolve, Reject) => {
+        app.c
         db.collection(collection).add(data).then((data) => {
             Resolve(data.id)
         })
