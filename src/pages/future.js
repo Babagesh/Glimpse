@@ -21,12 +21,7 @@ const db = getFirestore(app);
 
 const mapContainerStyle = {
   width: '100%',
-  height: '400px', // Set a fixed height for the map
-};
-
-const center = {
-  lat: 40.712776, // Default latitude
-  lng: -74.005974, // Default longitude
+  height: '400px',
 };
 
 export default function Existing() {
@@ -41,7 +36,7 @@ function GlimpseInputField() {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
-  const [isValid, setIsValid] = useState(false);
+  const [mapData, setMapData] = useState(null);
 
   const handleCodeChange = (e) => {
     setCode(e.target.value);
@@ -54,13 +49,15 @@ function GlimpseInputField() {
   const handleSubmit = async () => {
     if (code && name) {
       try {
-        // Query the 'maps' collection where the password field matches the provided code
+        // Querying the 'maps' collection using the password field
         const q = query(collection(db, 'maps'), where('password', '==', code));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          setIsValid(true);
-          setMessage(`Welcome to ${name}'s possible new memories`);
+          const data = querySnapshot.docs[0].data(); // Get the first matching map document
+          console.log("Map Data:", data); // Debugging log
+          setMapData(data); // Set the map data
+          setMessage(`Welcome to ${data.name || name}'s possible new memories`);
         } else {
           setMessage('No map found with the provided code.');
         }
@@ -80,7 +77,7 @@ function GlimpseInputField() {
           {message}
         </div>
       )}
-      {!isValid ? (
+      {!mapData ? (
         <>
           <h1 className="text-3xl font-bold mb-6">Create Future Glimpses</h1>
           <input
@@ -107,13 +104,18 @@ function GlimpseInputField() {
           />
         </>
       ) : (
-        <MapComponent />
+        <MapComponent mapData={mapData} />
       )}
     </div>
   );
 }
 
-const MapComponent = () => {
+const MapComponent = ({ mapData }) => {
+  const center = {
+    lat: mapData.lat || 40.712776, // Use lat from mapData or default
+    lng: mapData.lng || -74.005974, // Use lng from mapData or default
+  };
+
   return (
     <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
       <GoogleMap
