@@ -41,7 +41,7 @@ function GlimpseInputField() {
         type="button"
         className="w-full text-lg shadow-xl py-2 px-10 text-sm tracking-wide rounded-lg text-white bg-slate-800"
         onClick={handleSubmit}
-        value="Log in"
+        value="Generate Glimpses"
       />
       {message && <p>{message}</p>}
     </div>

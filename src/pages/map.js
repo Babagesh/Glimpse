@@ -12,28 +12,25 @@ const defaultCenter = {
   lng: -74.0060
 };
 
-const MyComponent = () => {
-  const [location, setLocation] = useState(defaultCenter);
-  const [markerIcon, setMarkerIcon] = useState(null);
+const ImageLocationFinder = () => {
+  const [markers, setMarkers] = useState([]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
-
     reader.onload = (event) => {
       const imageUrl = event.target.result;
-      setMarkerIcon(imageUrl);
-
       EXIF.getData(file, function() {
         const latitude = EXIF.getTag(this, 'GPSLatitude');
         const longitude = EXIF.getTag(this, 'GPSLongitude');
-        const latRef = EXIF.getTag(this, 'GPSLatitudeRef');
-        const lonRef = EXIF.getTag(this, 'GPSLongitudeRef');
-
+        const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
+        const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
         // Convert coordinates to decimal
         const lat = convertDMSToDD(latitude, latRef);
         const lng = convertDMSToDD(longitude, lonRef);
-        setLocation({ lat, lng });
+        if (lat && lng) {
+          setMarkers(prevMarkers => [...prevMarkers, { lat, lng, icon: imageUrl }]);
+        }
       });
     };
     reader.readAsDataURL(file);
@@ -41,29 +38,29 @@ const MyComponent = () => {
 
   const convertDMSToDD = (dms, ref) => {
     if (!dms) return null;
-    const degrees = dms[0] + dms[1]/60 + dms[2]/3600;
+    const degrees = dms[0] + dms[1] / 60 + dms[2] / 3600;
     return (ref === 'S' || ref === 'W') ? -degrees : degrees;
   };
 
   return (
     <div>
-      <input type="file" accept="image/*" onChange={handleImageChange} />
       <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={location}
-          zoom={5}
-        >
-          {markerIcon && (
+        <GoogleMap mapContainerStyle={containerStyle} center={defaultCenter} zoom={3}>
+          {markers.map((marker, index) => (
             <Marker
-              position={location}
-              icon={markerIcon}
+              key={index}
+              position={{ lat: marker.lat, lng: marker.lng }}
+              icon={{
+                url: marker.icon,
+                scaledSize: new window.google.maps.Size(30, 30) // Resize marker icon
+              }}
             />
-          )}
+          ))}
         </GoogleMap>
       </LoadScript>
+      <input type="file" accept="image/*" onChange={handleImageChange} />
     </div>
   );
 };
 
-export default MyComponent;
+export default ImageLocationFinder;
