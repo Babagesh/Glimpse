@@ -3,8 +3,8 @@ import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import EXIF from 'exif-js';
 
 const containerStyle = {
-  width: '400px',
-  height: '400px'
+  width: '100vw',
+  height: '100vh'
 };
 
 const defaultCenter = {
@@ -52,13 +52,21 @@ const ImageLocationFinder = () => {
               position={{ lat: marker.lat, lng: marker.lng }}
               icon={{
                 url: marker.icon,
-                scaledSize: new window.google.maps.Size(30, 30) // Resize marker icon
+                scaledSize: new window.google.maps.Size(35, 35), // Resize marker icon
+                anchor: new window.google.maps.Point(25, 25), // Adjust anchor point
+                labelOrigin: new window.google.maps.Point(20, 20) // Set label origin
+              }}
+              label={{
+                text: '',
+                fontFamily: 'sans-serif',
+                fontSize: '0px',
+                className: 'custom-marker' // Custom class for styling
               }}
             />
           ))}
         </GoogleMap>
       </LoadScript>
-      <input type="file" accept="image/*" onChange={handleImageChange} />
+      <input type="file" accept="image/*" onChange={handleImageChange} style={{ position: 'absolute', top: 10, left: 10, zIndex: 1 }} />
     </div>
   );
 };

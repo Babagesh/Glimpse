@@ -89,3 +89,13 @@ padding: 10px; /* Padding around options */
   height: 50vh; /* 50% of the viewport height */
   width: 100%;
 }
+.custom-marker img {
+  border-radius: 50%;
+  border: 2px solid #000;
+  box-sizing: border-box;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+
