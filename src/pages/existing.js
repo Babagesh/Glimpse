@@ -1,8 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-import Exif from 'exif-js';
+import { GoogleMap, LoadScript } from '@react-google-maps/api';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import '../App.css';
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDRv2sUSBbgsnoJsT1LnUcsE6eFaXXzlDk",
+  authDomain: "glimpses-8bf56.firebaseapp.com",
+  projectId: "glimpses-8bf56",
+  storageBucket: "glimpses-8bf56.appspot.com",
+  messagingSenderId: "90716597482",
+  appId: "1:90716597482:web:94de9cb882f480504e7b93",
+  measurementId: "G-Q00N0G3WRX"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const mapContainerStyle = {
   width: '100%',
@@ -27,6 +43,7 @@ function GlimpseInputField() {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [showMap, setShowMap] = useState(false);
+  const [fileCards, setFileCards] = useState([]);
   const navigate = useNavigate();
 
   const handleCodeChange = (e) => {
@@ -37,11 +54,31 @@ function GlimpseInputField() {
     setName(e.target.value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (code && name) {
-      setMessage(`Code "${code}" and Name "${name}" is valid! Welcome to ${name}!`);
-      setShowMap(true);
-      navigate('/glimpses');
+      try {
+        // Query the 'maps' collection to find matching name and password
+        const q = query(collection(db, 'maps'), where('password', '==', code), where('name', '==', name));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          setMessage(`Welcome to ${name}!`);
+          setShowMap(true);
+          
+          // Create file cards based on the retrieved maps
+          const cards = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            title: doc.data().name
+          }));
+          setFileCards(cards);
+          navigate('/glimpses'); // Navigate to /glimpses
+        } else {
+          setMessage('No map found with the provided name and code.');
+        }
+      } catch (error) {
+        console.error("Error fetching document: ", error);
+        setMessage('An error occurred while checking the map.');
+      }
     } else {
       setMessage('Please enter a valid code and name.');
     }
@@ -77,14 +114,15 @@ function GlimpseInputField() {
           {message && <p className="mt-4 text-lg text-center text-gray-700">{message}</p>}
         </>
       ) : (
-        <MapComponent />
+        <MapComponent fileCards={fileCards} />
       )}
     </div>
   );
 }
 
-const MapComponent = () => {
+const MapComponent = ({ fileCards }) => {
   const navigate = useNavigate();
+  
   return (
     <div className="w-full h-full relative">
       <button
@@ -93,13 +131,33 @@ const MapComponent = () => {
       >
         Back
       </button>
-      <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+      <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
           center={center}
           zoom={10}
         />
       </LoadScript>
+      {/* Render File Cards */}
+      <div className="absolute bottom-4 left-4 flex flex-wrap">
+        {fileCards.map(card => (
+          <FileCard key={card.id} title={card.title} id={card.id} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const FileCard = ({ title, id }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="file-card bg-white rounded-md shadow-lg m-2 p-4 flex flex-col justify-center items-center min-w-[200px] h-32">
+      <button
+        onClick={() => navigate("/map", { state: { documentId: id } })} // Pass document ID
+        className="text-gray-800 text-center font-bold text-lg hover:underline"
+      >
+        {title ? title : "Loading..."}
+      </button>
     </div>
   );
 };

@@ -1,5 +1,33 @@
 import React, { useState } from 'react';
 import '../App.css';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { GoogleMap, LoadScript } from '@react-google-maps/api';
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDRv2sUSBbgsnoJsT1LnUcsE6eFaXXzlDk",
+  authDomain: "glimpses-8bf56.firebaseapp.com",
+  projectId: "glimpses-8bf56",
+  storageBucket: "glimpses-8bf56.appspot.com",
+  messagingSenderId: "90716597482",
+  appId: "1:90716597482:web:94de9cb882f480504e7b93",
+  measurementId: "G-Q00N0G3WRX"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const mapContainerStyle = {
+  width: '100%',
+  height: '400px', // Set a fixed height for the map
+};
+
+const center = {
+  lat: 40.712776, // Default latitude
+  lng: -74.005974, // Default longitude
+};
 
 export default function Existing() {
   return (
@@ -23,10 +51,23 @@ function GlimpseInputField() {
     setName(e.target.value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (code && name) {
-      setIsValid(true);
-      setMessage(`Welcome to ${name}'s possible new memories`);
+      try {
+        // Query the 'maps' collection where the password field matches the provided code
+        const q = query(collection(db, 'maps'), where('password', '==', code));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          setIsValid(true);
+          setMessage(`Welcome to ${name}'s possible new memories`);
+        } else {
+          setMessage('No map found with the provided code.');
+        }
+      } catch (error) {
+        console.error("Error fetching document: ", error);
+        setMessage('An error occurred while checking the map.');
+      }
     } else {
       setMessage('Please enter a valid code and name.');
     }
@@ -34,7 +75,7 @@ function GlimpseInputField() {
 
   return (
     <div className="flex flex-col items-center">
-      {isValid && (
+      {message && (
         <div className="fixed top-4 text-xl font-bold text-blue-600">
           {message}
         </div>
@@ -65,7 +106,21 @@ function GlimpseInputField() {
             value="Generate Glimpses"
           />
         </>
-      ) : null}
+      ) : (
+        <MapComponent />
+      )}
     </div>
   );
 }
+
+const MapComponent = () => {
+  return (
+    <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
+        center={center}
+        zoom={10}
+      />
+    </LoadScript>
+  );
+};
