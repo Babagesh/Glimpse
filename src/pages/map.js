@@ -103,9 +103,15 @@ const ImageLocationFinder = () => {
     });
 
     // Update Firestore with new markers
-    const updatedMarkers = [...markers, ...newMarkers];
-    await updateDoc(docRef, { markers: updatedMarkers });
-    setMarkers(updatedMarkers);
+    if (newMarkers.length > 0) {
+      try {
+        const updatedMarkers = [...markers, ...newMarkers];
+        await updateDoc(docRef, { markers: updatedMarkers });
+        setMarkers(updatedMarkers);
+      } catch (error) {
+        console.error("Error updating document: ", error);
+      }
+    }
   };
 
   const convertDMSToDD = (dms, ref) => {
