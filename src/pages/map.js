@@ -84,94 +84,93 @@ const ImageLocationFinder = () => {
     const reader = new FileReader();
 
     reader.onload = async (event) => {
-      const imageUrl = event.target.result;
-      const img = new Image();
-      img.src = imageUrl;
+        const imageUrl = event.target.result;
+        const img = new Image();
+        img.src = imageUrl;
 
-      img.onload = async () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+        img.onload = async () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
 
-        let width = img.width;
-        let height = img.height;
+            let width = img.width;
+            let height = img.height;
 
-        if (width > height) {
-          if (width > 1080) {
-            height *= (1080 / width);
-            width = 1080;
-          }
-        } else {
-          if (height > 720) {
-            width *= (720 / height);
-            height = 720;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        ctx.drawImage(img, 0, 0, width, height);
-        const compressedImageUrl = canvas.toDataURL('image/jpeg', 0.8);
-
-        if (typeof compressedImageUrl !== 'string') {
-          console.error("Compressed image URL is not a valid string.");
-          return;
-        }
-
-        const blob = await (await fetch(compressedImageUrl)).blob();
-        const storageRef = ref(storage, `images/${file.name}`);
-
-        uploadBytes(storageRef, blob).then(async (snapshot) => {
-          const downloadURL = await getDownloadURL(snapshot.ref);
-          const docSnapshot = await getDoc(docRef);
-          const data = docSnapshot.exists() ? docSnapshot.data() : { markers: [], name: '', password: '' };
-          data.markers = Array.isArray(data.markers) ? data.markers : [];
-
-          EXIF.getData(file, async function () {
-            const latitude = EXIF.getTag(this, 'GPSLatitude');
-            const longitude = EXIF.getTag(this, 'GPSLongitude');
-            const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
-            const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
-            const width = EXIF.getTag(this, 'PixelXDimension');
-            const height = EXIF.getTag(this, 'PixelYDimension');
-            const lat = convertDMSToDD(latitude, latRef);
-            const lng = convertDMSToDD(longitude, lonRef);
-
-            if (lat && lng && width && height) {
-              const imageDoc = await addDoc(collection(db, 'images'), {
-                imageUrl: downloadURL,
-                width,
-                height
-              });
-
-              const newMarker = { lat, lng, icon: imageDoc.id };
-              const updatedData = {
-                ...data,
-                markers: [...data.markers, newMarker]
-              };
-
-              updateDoc(docRef, updatedData)
-                .then(() => {
-                  setMarkers(updatedData.markers);
-                })
-                .catch((error) => {
-                  console.error("Error updating document: ", error);
-                });
+            if (width > height) {
+                if (width > 1080) {
+                    height *= (1080 / width);
+                    width = 1080;
+                }
             } else {
-              console.error("No EXIF data found for latitude, longitude, or size.");
+                if (height > 720) {
+                    width *= (720 / height);
+                    height = 720;
+                }
             }
-          });
-        }).catch((error) => {
-          console.error("Error uploading image: ", error);
-        });
-      };
 
-      img.onerror = () => {
-        console.error("Error loading image.");
-      };
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedImageUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+            if (typeof compressedImageUrl !== 'string') {
+                console.error("Compressed image URL is not a valid string.");
+                return;
+            }
+
+            const blob = await (await fetch(compressedImageUrl)).blob();
+            const storageRef = ref(storage, `images/${file.name}`);
+
+            uploadBytes(storageRef, blob).then(async (snapshot) => {
+                const downloadURL = await getDownloadURL(snapshot.ref);
+                const docSnapshot = await getDoc(docRef);
+                const data = docSnapshot.exists() ? docSnapshot.data() : { markers: [], name: '', password: '' };
+                data.markers = Array.isArray(data.markers) ? data.markers : [];
+
+                EXIF.getData(file, async function () {
+                    const latitude = EXIF.getTag(this, 'GPSLatitude');
+                    const longitude = EXIF.getTag(this, 'GPSLongitude');
+                    const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
+                    const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
+                    const width = EXIF.getTag(this, 'PixelXDimension');
+                    const height = EXIF.getTag(this, 'PixelYDimension');
+                    const lat = convertDMSToDD(latitude, latRef);
+                    const lng = convertDMSToDD(longitude, lonRef);
+
+                    if (lat && lng && width && height) {
+                        const imageDoc = await addDoc(collection(db, 'images'), {
+                            imageUrl: downloadURL,
+                            width,
+                            height
+                        });
+
+                        const newMarker = { lat, lng, icon: imageDoc.id };
+
+                        // Update local state to include the new marker
+                        const updatedMarkers = [...data.markers, newMarker];
+                        setMarkers(updatedMarkers);
+
+                        // Update Firestore with the new markers
+                        await updateDoc(docRef, { markers: updatedMarkers });
+
+                        // Optionally, you could refetch markers to ensure the latest data
+                        // fetchMarkers();
+                    } else {
+                        console.error("No EXIF data found for latitude, longitude, or size.");
+                    }
+                });
+            }).catch((error) => {
+                console.error("Error uploading image: ", error);
+            });
+        };
+
+        img.onerror = () => {
+            console.error("Error loading image.");
+        };
     };
 
     reader.readAsDataURL(file);
-  };
+};
+
 
   const convertDMSToDD = (dms, ref) => {
     if (!dms) return null;
