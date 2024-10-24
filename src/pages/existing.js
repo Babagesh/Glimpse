@@ -8,7 +8,7 @@ import {getUser} from "../data"
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDRv2sUSBbgsnoJsT1LnUcsE6eFaXXzlDk",
+  apiKey: '${process.env.GOOGLE_CLOUD_API_KEY',
   authDomain: "glimpses-8bf56.firebaseapp.com",
   projectId: "glimpses-8bf56",
   storageBucket: "glimpses-8bf56.appspot.com",
@@ -151,7 +151,7 @@ const MapComponent = ({ fileCards }) => {
       >
         Back
       </button>
-      <LoadScript googleMapsApiKey="AIzaSyAAhPJobn3qsBMYDInmeZXhJN-KZPp0oDs">
+      <LoadScript googleMapsApiKey='${process.env.GOOGLE_CLOUD_API_KEY'>
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
           center={center}

@@ -8,8 +8,8 @@ export default function Signup() {
   const [email, setEmail] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // Error handling state
-  const [successMessage, setSuccessMessage] = useState(''); // Success message state
+  const [error, setError] = useState(''); 
+  const [successMessage, setSuccessMessage] = useState(''); 
 
   const navigate = useNavigate();
 
