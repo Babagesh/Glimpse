@@ -7,7 +7,7 @@ import { getUser } from "../data"
 
 // Your Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDRv2sUSBbgsnoJsT1LnUcsE6eFaXXzlDk",
+  apiKey: '${process.env.GOOGLE_CLOUD_API_KEY',
   authDomain: "glimpses-8bf56.firebaseapp.com",
   projectId: "glimpses-8bf56",
   storageBucket: "glimpses-8bf56.appspot.com",
